@@ -3,216 +3,519 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PBL System Maintenance | Vacuum Cleaning</title>
+    <title>PBL CleanOps | Vacuum Tracker</title>
+    
+    <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
+    <!-- Tailwind Config for Dark Mode -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark_bg: '#0f172a',
+                        dark_surface: '#1e293b',
+                        brand: '#2563eb'
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .glass-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid #f1f5f9;
-        }
-        .glass-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border-color: #3b82f6;
-        }
-        .status-badge {
-            display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
-            border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .status-done { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-        .status-pending { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
-        .gradient-header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s ease; }
         
-        /* Mobile Scroll Snap */
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        /* ✨ Header Styles */
+        .glass-header { 
+            background: rgba(255, 255, 255, 0.90); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-radius: 0 0 30px 30px; 
+            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.08); 
+            position: sticky; top: 0; z-index: 50;
+            transition: all 0.3s ease;
+        }
+
+        .dark .glass-header {
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        /* ✨ Schedule Banner */
+        .schedule-banner {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dark .schedule-banner {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Card Styling */
+        .pc-card { 
+            background: white; 
+            border-radius: 18px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: 1px solid #e2e8f0; 
+            position: relative; 
+            overflow: hidden; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+        }
+        .dark .pc-card {
+            background: #1e293b;
+            border-color: #334155;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+        }
+        .pc-card:active { transform: scale(0.97); }
+        
+        /* Status Highlighting */
+        .card-pending { border-left: 6px solid #f59e0b; }
+        .card-pending:hover { border-color: #d97706; transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.2); }
+        
+        .card-done { border-left: 6px solid #10b981; background: linear-gradient(to right, #f0fdf4, #ffffff); }
+        .dark .card-done { background: linear-gradient(to right, rgba(16, 185, 129, 0.1), #1e293b); }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed; bottom: 85px; right: 20px;
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
+            transition: transform 0.2s; z-index: 40;
+        }
+        .fab:active { transform: scale(0.90); }
+
+        .loader-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(4px); }
+        .dark .loader-overlay { background: rgba(15, 23, 42, 0.85); }
+        
+        .input-box {
+            width: 100%; padding: 14px 16px;
+            background: #f8fafc; border: 1px solid #cbd5e1;
+            border-radius: 14px; font-size: 0.95rem; color: #334155;
+            outline: none; transition: 0.2s;
+        }
+        .dark .input-box { background: #0f172a; border-color: #334155; color: white; }
+        .input-box:focus { background: white; border-color: #3b82f6; ring: 3px solid rgba(59, 130, 246, 0.2); }
+        .dark .input-box:focus { background: #1e293b; }
+
+        .progress-ring circle { transition: stroke-dashoffset 1s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-in { animation: slideIn 0.4s ease-out forwards; }
     </style>
 </head>
-<body class="text-slate-800" x-data="vacuumSystem()">
+<body class="bg-slate-50 dark:bg-[#0b1120] text-slate-800 dark:text-slate-200 transition-colors duration-300" x-data="vacuumTracker()">
 
     <!-- HEADER -->
-    <header class="gradient-header text-white sticky top-0 z-50 shadow-lg">
-        <div class="max-w-md mx-auto px-5 py-4 flex justify-between items-center">
+    <div class="glass-header p-6 pb-4">
+        <div class="flex justify-between items-start mb-4">
             <div>
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-broom text-white text-sm"></i>
-                    </div>
-                    <h1 class="font-bold text-lg tracking-tight">PBL CleanOps</h1>
-                </div>
-                <p class="text-[10px] text-slate-400 mt-0.5 font-medium uppercase tracking-wider">Vacuum Cleaning Tracker</p>
-            </div>
-            <div class="text-right">
-                <div class="text-2xl font-black text-blue-400" x-text="completionRate + '%'">0%</div>
-                <div class="text-[9px] text-slate-400 font-bold uppercase">Completed</div>
-            </div>
-        </div>
-        
-        <!-- Search & Filter Bar -->
-        <div class="px-5 pb-4">
-            <div class="relative">
-                <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-xs"></i>
-                <input type="text" x-model="search" placeholder="Search Asset ID (e.g. PBLNET001)..." 
-                       class="w-full pl-9 pr-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition shadow-inner">
-            </div>
-        </div>
-    </header>
-
-    <!-- MAIN LIST -->
-    <main class="max-w-md mx-auto p-4 pb-24 space-y-4">
-        
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-2 gap-3 mb-2">
-            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs"><i class="fa-solid fa-check"></i></div>
-                <div><div class="text-xl font-bold text-slate-800" x-text="doneCount">0</div><div class="text-[10px] text-slate-400 font-bold uppercase">Done</div></div>
-            </div>
-            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs"><i class="fa-solid fa-clock"></i></div>
-                <div><div class="text-xl font-bold text-slate-800" x-text="pendingCount">0</div><div class="text-[10px] text-slate-400 font-bold uppercase">Pending</div></div>
-            </div>
-        </div>
-
-        <!-- List Items -->
-        <template x-for="pc in filteredList" :key="pc.id">
-            <div class="glass-card p-4 flex justify-between items-center group cursor-pointer">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg shadow-sm border border-slate-100"
-                         :class="pc.date ? 'bg-green-50 text-green-500' : 'bg-slate-50 text-slate-300'">
-                        <i class="fa-solid" :class="pc.date ? 'fa-circle-check' : 'fa-laptop'"></i>
+                <div class="flex items-center gap-3 mb-1">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                        <i class="fa-solid fa-wind text-white text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-slate-800 group-hover:text-blue-600 transition" x-text="pc.id"></h3>
-                        <p class="text-[10px] text-slate-400 font-medium flex items-center gap-1.5">
-                            <i class="fa-brands fa-windows"></i> <span x-text="pc.os"></span>
-                        </p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div x-show="pc.date">
-                        <span class="status-badge status-done">Done</span>
-                        <p class="text-[9px] text-slate-400 mt-1 font-mono" x-text="pc.date"></p>
-                    </div>
-                    <div x-show="!pc.date">
-                        <span class="status-badge status-pending">Pending</span>
+                        <h1 class="text-xl font-black tracking-tight text-slate-800 dark:text-white leading-none">PBL CleanOps</h1>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mt-1">System Vacuum Tracker</p>
                     </div>
                 </div>
             </div>
-        </template>
-        
-        <!-- Empty State -->
-        <div x-show="filteredList.length === 0" class="text-center py-10 opacity-50">
-            <i class="fa-solid fa-box-open text-4xl mb-2"></i>
-            <p class="text-xs font-bold uppercase">No records found</p>
+            
+            <div class="flex items-center gap-4">
+                <!-- Theme Toggle -->
+                <button @click="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-yellow-400 transition hover:scale-110 shadow-sm">
+                    <i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
+                </button>
+
+                <!-- Progress Circle -->
+                <div class="relative w-12 h-12">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <circle class="text-slate-200 dark:text-slate-700 stroke-current" stroke-width="10" cx="50" cy="50" r="40" fill="transparent"></circle>
+                        <circle class="text-blue-600 dark:text-blue-500 progress-ring stroke-current" stroke-width="10" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent" :stroke-dasharray="251.2" :stroke-dashoffset="251.2 - (251.2 * percentage) / 100"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center text-[10px] font-black text-slate-700 dark:text-white" x-text="percentage + '%'"></div>
+                </div>
+            </div>
         </div>
 
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 p-3 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
-        <div class="max-w-md mx-auto flex items-center justify-between">
+        <!-- 🗓️ CYCLE SCHEDULE BANNER -->
+        <div class="schedule-banner">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 border border-slate-200">
-                    <i class="fa-solid fa-user-shield text-xs"></i>
+                <div class="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 shadow-sm">
+                    <i class="fa-regular fa-calendar-check text-sm"></i>
                 </div>
                 <div>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase">Executed By</p>
-                    <p class="text-xs font-bold text-slate-800">Ashok Singh <span class="text-blue-500">(IT)</span></p>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wide">Current Cycle</p>
+                    <p class="text-sm font-black text-slate-800 dark:text-white">JAN 2026</p>
                 </div>
             </div>
+            <div class="h-8 w-px bg-slate-300 dark:bg-white/10"></div>
             <div class="text-right">
-                <p class="text-[9px] text-slate-400">Total Systems</p>
-                <p class="text-sm font-black text-slate-800 font-mono" x-text="pcs.length">0</p>
+                <p class="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-bold flex items-center justify-end gap-1">Next Due <i class="fa-solid fa-arrow-right text-[8px]"></i></p>
+                <p class="text-sm font-black text-slate-700 dark:text-slate-300">JULY 2026</p>
             </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="relative mt-5">
+            <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+            <input type="text" x-model="search" placeholder="Search Asset ID..." 
+                   class="w-full pl-10 pr-4 py-3 bg-white dark:bg-black/30 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition shadow-sm">
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="px-4 mt-4 pb-24 relative z-10 space-y-4">
+        
+        <!-- Summary Pills -->
+        <div class="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
+            <div class="bg-white dark:bg-dark_surface px-5 py-2.5 rounded-full shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-2 whitespace-nowrap">
+                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-200"></div>
+                <span class="text-xs font-bold text-slate-700 dark:text-white"><span x-text="doneCount" class="text-emerald-600 dark:text-emerald-400 text-sm">0</span> Completed</span>
+            </div>
+            <div class="bg-white dark:bg-dark_surface px-5 py-2.5 rounded-full shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-2 whitespace-nowrap">
+                <div class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-200"></div>
+                <span class="text-xs font-bold text-slate-700 dark:text-white"><span x-text="pendingCount" class="text-amber-600 dark:text-amber-400 text-sm">0</span> Pending</span>
+            </div>
+        </div>
+
+        <!-- Loader -->
+        <div x-show="loading" class="py-12 text-center">
+            <div class="w-12 h-12 border-4 border-blue-100 dark:border-slate-700 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
+            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider animate-pulse">Syncing Inventory...</p>
+        </div>
+
+        <!-- LIST -->
+        <div class="space-y-3">
+            <template x-for="(pc, index) in filteredList" :key="pc.id">
+                <div class="pc-card p-5 flex justify-between items-center slide-in"
+                     :style="`animation-delay: ${index * 50}ms`"
+                     :class="pc.status === 'DONE' ? 'card-done' : 'card-pending'"
+                     @click="openModal('edit', pc)">
+                    
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-md border transition-transform group-hover:scale-110"
+                             :class="pc.status === 'DONE' ? 'bg-white dark:bg-dark_bg text-emerald-600 border-emerald-100 dark:border-emerald-900/50' : 'bg-amber-50 dark:bg-amber-900/20 text-amber-500 border-amber-100 dark:border-amber-900/50'">
+                            <i class="fa-solid" :class="pc.status === 'DONE' ? 'fa-check-double' : 'fa-broom'"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base text-slate-800 dark:text-white tracking-tight" x-text="pc.id"></h3>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide flex items-center gap-1">
+                                    <i class="fa-brands fa-windows"></i> <span x-text="pc.os"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-right">
+                        <template x-if="pc.status === 'DONE'">
+                            <div class="flex flex-col items-end">
+                                <span class="text-[9px] font-black text-emerald-700 dark:text-emerald-400 uppercase bg-emerald-100/80 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800 px-2 py-1 rounded-lg mb-1">Cleaned</span>
+                                <p class="text-[11px] text-slate-600 dark:text-slate-400 font-mono font-bold flex items-center gap-1">
+                                    <!-- ✅ DISPLAY DATE HERE -->
+                                    <i class="fa-regular fa-calendar-check text-emerald-500"></i> <span x-text="formatDateDisplay(pc.date)"></span>
+                                </p>
+                            </div>
+                        </template>
+                        <template x-if="pc.status !== 'DONE'">
+                            <div class="flex flex-col items-end">
+                                <span class="text-[9px] font-black text-amber-700 dark:text-amber-400 uppercase bg-amber-100/80 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-800 px-2 py-1 rounded-lg mb-1">Due Now</span>
+                                <p class="text-[10px] text-slate-400 font-medium">Tap to Mark Done</p>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Loading Overlay on Item -->
+                    <div x-show="pc.updating" class="loader-overlay rounded-xl">
+                        <i class="fa-solid fa-circle-notch fa-spin text-blue-600 text-2xl"></i>
+                        <p class="text-[10px] font-bold text-slate-500 mt-2 uppercase">Saving...</p>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Floating Add Button -->
+    <button @click="openModal('add')" class="fab hover:scale-110 active:scale-95 transition-all shadow-xl shadow-blue-600/30">
+        <i class="fa-solid fa-plus text-xl"></i>
+    </button>
+
+    <!-- FOOTER -->
+    <footer class="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-dark_surface/95 backdrop-blur-md border-t border-slate-200 dark:border-white/10 p-3 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/5 shadow-sm">
+                    <i class="fa-solid fa-user-shield text-sm"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Executed By</p>
+                    <p class="text-sm font-bold text-slate-800 dark:text-white">Ashok Singh <span class="text-blue-600 dark:text-blue-400 font-black text-xs px-1 bg-blue-50 dark:bg-blue-900/30 rounded ml-1">IT</span></p>
+                </div>
+            </div>
+            <button @click="fetchData()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/10 text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 transition active:scale-95">
+                <i class="fa-solid fa-rotate"></i>
+            </button>
         </div>
     </footer>
 
-    <!-- LOGIC -->
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('vacuumSystem', () => ({
-                search: '',
-                pcs: [
-                    { id: 'PBLNET001', os: 'Win-11-Pro', date: '03-01-2026' },
-                    { id: 'PBLNET002', os: 'XP-PRO', date: '03-01-2026' },
-                    { id: 'PBLNET003', os: 'XP-PRO', date: '03-01-2026' },
-                    { id: 'PBLNET004', os: 'XP-PRO', date: '03-01-2026' },
-                    { id: 'PBLNET005', os: 'XP-PRO', date: '03-01-2026' },
-                    { id: 'PBLNET006', os: 'XP-PRO', date: '03-01-2026' },
-                    { id: 'PBLNET007', os: 'XP-PRO', date: '03-01-2026' },
-                    { id: 'PBLNET008', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET009', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET010', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET011', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET012', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET013', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET014', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET015', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET016', os: 'XP-PRO', date: '' },
-                    { id: 'PBLNET017', os: 'XP-PRO', date: '' },
-                    { id: 'PBLNET018', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET019', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET020', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET021', os: 'Win-11-Pro', date: '03-01-2026' },
-                    { id: 'PBLNET022', os: 'Win-11-Pro', date: '03-01-2026' },
-                    { id: 'PBLNET023', os: 'Win-11-Pro', date: '03-01-2026' },
-                    { id: 'PBLNET024', os: 'Win-11-Pro', date: '03-01-2026' },
-                    { id: 'PBLNET025', os: 'Win-11-Pro', date: '03-01-2026' },
-                    { id: 'PBLNET026', os: 'Win-11-Pro', date: '03-01-2026' },
-                    { id: 'PBLNET027', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET028', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET029', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET030', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET031', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET032', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET033', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET034', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET035', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET036', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET037', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET038', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET039', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET040', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET041', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET042', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET043', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET044', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET045', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET046', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET047', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET048', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET049', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET050', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET051', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET052', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET053', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET054', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET055', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLNET056', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLNET057', os: 'Win-11-Pro', date: '' },
-                    { id: 'PBLSFT001', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLSFT002', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLSFT003', os: 'Win-11-Pro', date: '10-01-2026' },
-                    { id: 'PBLSFT004', os: 'XP-PRO', date: '' }
-                ],
+    <!-- ADD/EDIT MODAL -->
+    <div x-show="showModal" x-cloak 
+         class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-md p-0 sm:p-4"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-full sm:translate-y-10 sm:scale-95"
+         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100">
+        
+        <div class="bg-white dark:bg-dark_surface w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden relative" @click.away="showModal = false">
+            <div class="h-1.5 w-12 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-3 mb-1 sm:hidden"></div>
+            
+            <div class="px-8 py-6 border-b border-slate-100 dark:border-white/10">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="font-black text-2xl text-slate-800 dark:text-white" x-text="mode === 'add' ? 'New System' : 'Update Status'"></h3>
+                        <p class="text-xs text-slate-500 font-medium mt-1">Manage vacuum cleaning record</p>
+                    </div>
+                    <button @click="showModal = false" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <div class="p-8 space-y-5">
                 
+                <div>
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Asset ID</label>
+                    <input type="text" x-model="form.assetId" class="input-box font-mono font-bold uppercase text-lg text-slate-800 dark:text-white tracking-wide" :readonly="mode === 'edit'" placeholder="PBLNET...">
+                </div>
+
+                <div>
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Operating System</label>
+                    <div class="relative">
+                        <select x-model="form.os" class="input-box cursor-pointer appearance-none">
+                            <option>Windows 11 Pro</option>
+                            <option>Windows 10</option>
+                            <option>Windows XP</option>
+                            <option>Windows 7</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-5">
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Status</label>
+                        <div class="relative">
+                            <select x-model="form.status" @change="handleStatusChange()" class="input-box font-bold appearance-none"
+                                    :class="form.status === 'DONE' ? 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20' : 'text-amber-600 bg-amber-50 border-amber-200 dark:bg-amber-900/20'">
+                                <option value="PENDING">Pending</option>
+                                <option value="DONE">Done</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Date</label>
+                        <input type="date" x-model="form.date" class="input-box" :disabled="form.status !== 'DONE'">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Admin Key 🔐</label>
+                    <input type="password" x-model="form.secret" placeholder="Enter PBL2026" class="input-box border-dashed border-2 focus:border-solid focus:border-blue-500">
+                </div>
+
+                <div class="flex gap-3 mt-6 pt-4 border-t border-slate-50 dark:border-white/10">
+                    <button x-show="mode === 'edit'" @click="performAction('delete')" class="px-5 bg-red-50 dark:bg-red-900/20 text-red-500 font-bold py-3.5 rounded-xl hover:bg-red-100 transition border border-red-100 dark:border-red-900/30"><i class="fa-solid fa-trash"></i></button>
+                    <button @click="performAction('save')" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition active:scale-95 transform flex items-center justify-center gap-2">
+                        <span x-text="submitting ? 'Saving...' : 'Save Record'"></span> <i x-show="!submitting" class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzXOvi2tV7IX0scxhSoewZemWgxbHzskbdPtmU2sGfKaVG51_u5519HJMwm--njmksA/exec";  
+
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('vacuumTracker', () => ({
+                pcs: [],
+                search: '',
+                loading: false,
+                submitting: false,
+                showModal: false,
+                isDark: false,
+                mode: 'add',
+                form: { assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' },
+
+                init() { 
+                    if(localStorage.getItem('theme') === 'dark') {
+                        this.isDark = true;
+                        document.documentElement.classList.add('dark');
+                    }
+                    this.fetchData(); 
+                },
+
+                toggleTheme() {
+                    this.isDark = !this.isDark;
+                    if(this.isDark) {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                    }
+                },
+
+                async fetchData() {
+                    this.loading = true;
+                    try {
+                        const res = await fetch(API_URL + '?action=getVacuumData');
+                        const data = await res.json();
+                        
+                        this.pcs = data.pcs.map(p => {
+                            const isDone = (p.status && String(p.status).trim().toUpperCase() === 'DONE');
+                            // If not done, or done but no date, keep it blank
+                            let displayDate = isDone ? p.date : '';
+
+                            return {
+                                id: p.id,
+                                os: p.os,
+                                status: isDone ? 'DONE' : 'PENDING', 
+                                date: displayDate,
+                                updating: false
+                            };
+                        });
+                    } catch (e) { alert("Sync Failed"); } finally { this.loading = false; }
+                },
+
+                // ✅ FIX 1: Robust Date Parser for Display (Converts ANY format to DD MMM YYYY)
+                formatDateDisplay(dateStr) {
+                    if (!dateStr || dateStr === "N/A") return '';
+                    
+                    let dateObj = new Date(dateStr); // Try standard parsing
+                    
+                    // Fallback: Manually parse DD-MM-YYYY if standard fail
+                    if (isNaN(dateObj.getTime())) {
+                        const parts = String(dateStr).split(/[-/]/);
+                        if(parts.length === 3) {
+                            const day = parseInt(parts[0], 10);
+                            const month = parseInt(parts[1], 10) - 1;
+                            const year = parseInt(parts[2], 10);
+                            dateObj = new Date(year, month, day);
+                        }
+                    }
+
+                    if (!isNaN(dateObj.getTime())) {
+                        return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                    }
+                    
+                    return dateStr; // Show raw if all fails
+                },
+
+                // ✅ FIX 2: Input Date Converter (DD-MM-YYYY to YYYY-MM-DD for <input type="date">)
+                convertDateForInput(dateStr) {
+                    if (!dateStr || dateStr === "N/A") return '';
+                    
+                    const parts = String(dateStr).split(/[-/]/);
+                    if(parts.length === 3) {
+                        // Assuming DD-MM-YYYY comes from sheet
+                        return `${parts[2]}-${parts[1]}-${parts[0]}`; 
+                    }
+                    
+                    // Try parsing as standard date
+                    let d = new Date(dateStr);
+                    if(!isNaN(d.getTime())) {
+                        return d.toISOString().split('T')[0];
+                    }
+                    
+                    return ''; 
+                },
+
+                openModal(mode, item = null) {
+                    this.mode = mode;
+                    this.form.secret = ''; 
+                    if (mode === 'edit' && item) {
+                        this.form.assetId = item.id;
+                        this.form.os = item.os;
+                        this.form.status = item.status;
+                        this.form.date = this.convertDateForInput(item.date); 
+                    } else {
+                        this.form = { assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' };
+                    }
+                    this.showModal = true;
+                },
+
+                handleStatusChange() {
+                    if (this.form.status === 'DONE') {
+                        this.form.date = new Date().toISOString().split('T')[0];
+                    } else {
+                        this.form.date = '';
+                    }
+                },
+
+                async performAction(type) {
+                    if (this.form.secret !== 'PBL2026') { alert("❌ Invalid Admin Key!"); return; }
+                    this.submitting = true;
+
+                    const payload = {
+                        action: 'handleVacuum',
+                        type: type === 'delete' ? 'delete' : 'save',
+                        assetId: this.form.assetId,
+                        os: this.form.os,
+                        status: this.form.status,
+                        date: this.form.date, 
+                        secret: this.form.secret
+                    };
+
+                    try {
+                        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                        const result = await res.json();
+                        if (result.status === 'success') {
+                            this.showModal = false;
+                            this.fetchData(); 
+                        } else {
+                            alert("Error: " + result.message);
+                        }
+                    } catch (e) { alert("Network Error"); } 
+                    finally { this.submitting = false; }
+                },
+
                 get filteredList() {
-                    if(!this.search) return this.pcs;
+                    if (!this.search) return this.pcs;
                     return this.pcs.filter(p => p.id.toLowerCase().includes(this.search.toLowerCase()));
                 },
                 
-                get doneCount() { return this.pcs.filter(p => p.date).length; },
-                get pendingCount() { return this.pcs.filter(p => !p.date).length; },
-                get completionRate() { return Math.round((this.doneCount / this.pcs.length) * 100); }
+                get doneCount() { return this.pcs.filter(p => p.status === 'DONE').length; },
+                get pendingCount() { return this.pcs.filter(p => p.status !== 'DONE').length; },
+                get percentage() { if(this.pcs.length === 0) return 0; return Math.round((this.doneCount / this.pcs.length) * 100); },
+                
+                async markAsDone(pc) {
+                     if (pc.status === 'DONE') return; 
+                     if (!confirm(`Mark ${pc.id} as Vacuumed?`)) return;
+                     pc.updating = true;
+                     try {
+                        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateVacuum', systemId: pc.id, secret: 'PBL2026' }) });
+                        const result = await res.json();
+                        if (result.status === 'success') { pc.status = 'DONE'; pc.date = result.date; } 
+                        else { alert("Update Failed"); }
+                     } catch(e) { alert("Network Error"); } 
+                     finally { pc.updating = false; }
+                }
             }))
         })
     </script>
