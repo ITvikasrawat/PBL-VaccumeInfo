@@ -193,10 +193,10 @@
             </div>
         </div>
 
-        <!-- Loader -->
+        <!-- Loader (Shown only on first load/empty cache) -->
         <div x-show="loading" class="py-12 text-center">
             <div class="w-12 h-12 border-4 border-blue-100 dark:border-slate-700 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
-            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider animate-pulse">Syncing Inventory...</p>
+            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider animate-pulse">Initializing Database...</p>
         </div>
 
         <!-- LIST -->
@@ -227,7 +227,6 @@
                             <div class="flex flex-col items-end">
                                 <span class="text-[9px] font-black text-emerald-700 dark:text-emerald-400 uppercase bg-emerald-100/80 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800 px-2 py-1 rounded-lg mb-1">Cleaned</span>
                                 <p class="text-[11px] text-slate-600 dark:text-slate-400 font-mono font-bold flex items-center gap-1">
-                                    <!-- ✅ DISPLAY DATE HERE -->
                                     <i class="fa-regular fa-calendar-check text-emerald-500"></i> <span x-text="formatDateDisplay(pc.date)"></span>
                                 </p>
                             </div>
@@ -267,8 +266,9 @@
                     <p class="text-sm font-bold text-slate-800 dark:text-white">Ashok Singh <span class="text-blue-600 dark:text-blue-400 font-black text-xs px-1 bg-blue-50 dark:bg-blue-900/30 rounded ml-1">IT</span></p>
                 </div>
             </div>
-            <button @click="fetchData()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/10 text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 transition active:scale-95">
-                <i class="fa-solid fa-rotate"></i>
+            <!-- Sync Button with Spinner Logic -->
+            <button @click="fetchData(true)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/10 text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 transition active:scale-95">
+                <i class="fa-solid fa-rotate" :class="{'fa-spin': isSyncing}"></i>
             </button>
         </div>
     </footer>
@@ -355,7 +355,8 @@
             Alpine.data('vacuumTracker', () => ({
                 pcs: [],
                 search: '',
-                loading: false,
+                loading: false, // Initial full-screen loader
+                isSyncing: false, // Background sync indicator
                 submitting: false,
                 showModal: false,
                 isDark: false,
@@ -363,11 +364,28 @@
                 form: { assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' },
 
                 init() { 
+                    // Theme Logic
                     if(localStorage.getItem('theme') === 'dark') {
                         this.isDark = true;
                         document.documentElement.classList.add('dark');
                     }
-                    this.fetchData(); 
+
+                    // ⚡ CACHE FIRST STRATEGY ⚡
+                    const cachedData = localStorage.getItem('vacuum_data');
+                    if (cachedData) {
+                        try {
+                            this.pcs = JSON.parse(cachedData);
+                            this.loading = false; // Show content immediately
+                        } catch (e) {
+                            console.error("Cache Error", e);
+                            this.loading = true; // Fallback to loader if cache corrupt
+                        }
+                    } else {
+                        this.loading = true; // First time visit
+                    }
+
+                    // Fetch fresh data in background
+                    this.fetchData(false); 
                 },
 
                 toggleTheme() {
@@ -381,15 +399,16 @@
                     }
                 },
 
-                async fetchData() {
-                    this.loading = true;
+                async fetchData(forceRefresh = false) {
+                    // Only show spinner if forced (clicked refresh btn) or if initial load
+                    if (forceRefresh) this.isSyncing = true;
+                    
                     try {
                         const res = await fetch(API_URL + '?action=getVacuumData');
                         const data = await res.json();
                         
-                        this.pcs = data.pcs.map(p => {
+                        const processedData = data.pcs.map(p => {
                             const isDone = (p.status && String(p.status).trim().toUpperCase() === 'DONE');
-                            // If not done, or done but no date, keep it blank
                             let displayDate = isDone ? p.date : '';
 
                             return {
@@ -400,16 +419,24 @@
                                 updating: false
                             };
                         });
-                    } catch (e) { alert("Sync Failed"); } finally { this.loading = false; }
+
+                        this.pcs = processedData;
+                        
+                        // ✅ SAVE TO LOCAL STORAGE
+                        localStorage.setItem('vacuum_data', JSON.stringify(this.pcs));
+
+                    } catch (e) { 
+                        console.error("Sync Failed", e);
+                        if (forceRefresh) alert("Sync Failed: Check Internet");
+                    } finally { 
+                        this.loading = false; 
+                        this.isSyncing = false;
+                    }
                 },
 
-                // ✅ FIX 1: Robust Date Parser for Display (Converts ANY format to DD MMM YYYY)
                 formatDateDisplay(dateStr) {
                     if (!dateStr || dateStr === "N/A") return '';
-                    
-                    let dateObj = new Date(dateStr); // Try standard parsing
-                    
-                    // Fallback: Manually parse DD-MM-YYYY if standard fail
+                    let dateObj = new Date(dateStr);
                     if (isNaN(dateObj.getTime())) {
                         const parts = String(dateStr).split(/[-/]/);
                         if(parts.length === 3) {
@@ -419,30 +446,18 @@
                             dateObj = new Date(year, month, day);
                         }
                     }
-
                     if (!isNaN(dateObj.getTime())) {
                         return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                     }
-                    
-                    return dateStr; // Show raw if all fails
+                    return dateStr;
                 },
 
-                // ✅ FIX 2: Input Date Converter (DD-MM-YYYY to YYYY-MM-DD for <input type="date">)
                 convertDateForInput(dateStr) {
                     if (!dateStr || dateStr === "N/A") return '';
-                    
                     const parts = String(dateStr).split(/[-/]/);
-                    if(parts.length === 3) {
-                        // Assuming DD-MM-YYYY comes from sheet
-                        return `${parts[2]}-${parts[1]}-${parts[0]}`; 
-                    }
-                    
-                    // Try parsing as standard date
+                    if(parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`; 
                     let d = new Date(dateStr);
-                    if(!isNaN(d.getTime())) {
-                        return d.toISOString().split('T')[0];
-                    }
-                    
+                    if(!isNaN(d.getTime())) return d.toISOString().split('T')[0];
                     return ''; 
                 },
 
@@ -487,7 +502,7 @@
                         const result = await res.json();
                         if (result.status === 'success') {
                             this.showModal = false;
-                            this.fetchData(); 
+                            this.fetchData(true); // Refresh data and cache after save
                         } else {
                             alert("Error: " + result.message);
                         }
@@ -502,20 +517,7 @@
                 
                 get doneCount() { return this.pcs.filter(p => p.status === 'DONE').length; },
                 get pendingCount() { return this.pcs.filter(p => p.status !== 'DONE').length; },
-                get percentage() { if(this.pcs.length === 0) return 0; return Math.round((this.doneCount / this.pcs.length) * 100); },
-                
-                async markAsDone(pc) {
-                     if (pc.status === 'DONE') return; 
-                     if (!confirm(`Mark ${pc.id} as Vacuumed?`)) return;
-                     pc.updating = true;
-                     try {
-                        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateVacuum', systemId: pc.id, secret: 'PBL2026' }) });
-                        const result = await res.json();
-                        if (result.status === 'success') { pc.status = 'DONE'; pc.date = result.date; } 
-                        else { alert("Update Failed"); }
-                     } catch(e) { alert("Network Error"); } 
-                     finally { pc.updating = false; }
-                }
+                get percentage() { if(this.pcs.length === 0) return 0; return Math.round((this.doneCount / this.pcs.length) * 100); }
             }))
         })
     </script>
