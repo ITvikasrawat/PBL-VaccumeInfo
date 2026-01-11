@@ -181,13 +181,20 @@
     <!-- MAIN CONTENT -->
     <div class="px-4 mt-4 pb-24 relative z-10 space-y-4">
         
-        <!-- Summary Pills -->
+        <!-- Summary Pills (Interactive Filters) -->
         <div class="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
-            <div class="bg-white dark:bg-dark_surface px-5 py-2.5 rounded-full shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-2 whitespace-nowrap">
+            <!-- Completed Pill -->
+            <div @click="toggleFilter('DONE')" 
+                 class="cursor-pointer px-5 py-2.5 rounded-full shadow-sm border flex items-center gap-2 whitespace-nowrap transition-all"
+                 :class="filterStatus === 'DONE' ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 ring-1 ring-emerald-500' : 'bg-white dark:bg-dark_surface border-slate-200 dark:border-slate-700 hover:border-emerald-300'">
                 <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-200"></div>
                 <span class="text-xs font-bold text-slate-700 dark:text-white"><span x-text="doneCount" class="text-emerald-600 dark:text-emerald-400 text-sm">0</span> Completed</span>
             </div>
-            <div class="bg-white dark:bg-dark_surface px-5 py-2.5 rounded-full shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-2 whitespace-nowrap">
+
+            <!-- Pending Pill -->
+            <div @click="toggleFilter('PENDING')"
+                 class="cursor-pointer px-5 py-2.5 rounded-full shadow-sm border flex items-center gap-2 whitespace-nowrap transition-all"
+                 :class="filterStatus === 'PENDING' ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-500 ring-1 ring-amber-500' : 'bg-white dark:bg-dark_surface border-slate-200 dark:border-slate-700 hover:border-amber-300'">
                 <div class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-200"></div>
                 <span class="text-xs font-bold text-slate-700 dark:text-white"><span x-text="pendingCount" class="text-amber-600 dark:text-amber-400 text-sm">0</span> Pending</span>
             </div>
@@ -246,6 +253,13 @@
                     </div>
                 </div>
             </template>
+            
+            <!-- Empty State -->
+            <div x-show="filteredList.length === 0 && !loading" class="text-center py-10 opacity-60">
+                <i class="fa-solid fa-filter text-4xl text-slate-300 dark:text-slate-600 mb-3"></i>
+                <p class="text-sm font-bold text-slate-500 dark:text-slate-400">No records found matching filter.</p>
+                <button @click="filterStatus = 'ALL'; search = ''" x-show="filterStatus !== 'ALL' || search" class="mt-3 text-xs font-bold text-blue-600 hover:underline">Clear Filters</button>
+            </div>
         </div>
     </div>
 
@@ -361,6 +375,7 @@
                 showModal: false,
                 isDark: false,
                 mode: 'add',
+                filterStatus: 'ALL', // 'ALL', 'DONE', 'PENDING'
                 form: { assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' },
 
                 init() { 
@@ -396,6 +411,15 @@
                     } else {
                         document.documentElement.classList.remove('dark');
                         localStorage.setItem('theme', 'light');
+                    }
+                },
+
+                // New Toggle Filter Function
+                toggleFilter(status) {
+                    if (this.filterStatus === status) {
+                        this.filterStatus = 'ALL'; // Toggle off if clicked again
+                    } else {
+                        this.filterStatus = status; // Set new filter
                     }
                 },
 
@@ -511,8 +535,21 @@
                 },
 
                 get filteredList() {
-                    if (!this.search) return this.pcs;
-                    return this.pcs.filter(p => p.id.toLowerCase().includes(this.search.toLowerCase()));
+                    let result = this.pcs;
+
+                    // Filter by Status based on Pill Click
+                    if (this.filterStatus === 'DONE') {
+                        result = result.filter(p => p.status === 'DONE');
+                    } else if (this.filterStatus === 'PENDING') {
+                        result = result.filter(p => p.status !== 'DONE');
+                    }
+
+                    // Filter by Search (works with Status filter)
+                    if (this.search) {
+                        result = result.filter(p => p.id.toLowerCase().includes(this.search.toLowerCase()));
+                    }
+
+                    return result;
                 },
                 
                 get doneCount() { return this.pcs.filter(p => p.status === 'DONE').length; },
