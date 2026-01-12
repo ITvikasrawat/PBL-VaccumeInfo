@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PBL CleanOps | Vacuum Tracker</title>
-    
-    <!-- ✅ Favicon Added -->
     <link rel="icon" type="image/png" href="pbl-logo.png">
      
     <!-- Dependencies -->
@@ -14,7 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
-    <!-- Tailwind Config for Dark Mode -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -23,7 +20,6 @@
                     colors: {
                         dark_bg: '#0f172a',
                         dark_surface: '#1e293b',
-                        brand: '#2563eb'
                     }
                 }
             }
@@ -32,72 +28,33 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s ease; }
-        
-        /* ✨ Header Styles */
         .glass-header { 
-            background: rgba(255, 255, 255, 0.90); 
-            backdrop-filter: blur(12px); 
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            border-radius: 0 0 30px 30px; 
-            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.08); 
-            position: sticky; top: 0; z-index: 50;
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.90); backdrop-filter: blur(12px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); border-radius: 0 0 30px 30px; 
+            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 50;
         }
-
-        .dark .glass-header {
-            background: rgba(15, 23, 42, 0.9);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-        }
-
-        /* ✨ Schedule Banner */
+        .dark .glass-header { background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        
         .schedule-banner {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border: 1px solid #bae6fd;
-            border-radius: 16px;
-            padding: 14px 16px;
-            margin-top: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd;
+            border-radius: 16px; padding: 14px 16px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center;
         }
-        .dark .schedule-banner {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        .dark .schedule-banner { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        /* Card Styling */
         .pc-card { 
-            background: white; 
-            border-radius: 18px; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            border: 1px solid #e2e8f0; 
-            position: relative; 
-            overflow: hidden; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+            background: white; border-radius: 18px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: 1px solid #e2e8f0; position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
         }
-        .dark .pc-card {
-            background: #1e293b;
-            border-color: #334155;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-        }
+        .dark .pc-card { background: #1e293b; border-color: #334155; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
         .pc-card:active { transform: scale(0.97); }
-        
-        /* Status Highlighting */
         .card-pending { border-left: 6px solid #f59e0b; }
-        .card-pending:hover { border-color: #d97706; transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.2); }
-        
         .card-done { border-left: 6px solid #10b981; background: linear-gradient(to right, #f0fdf4, #ffffff); }
         .dark .card-done { background: linear-gradient(to right, rgba(16, 185, 129, 0.1), #1e293b); }
 
-        /* Floating Action Button */
         .fab {
-            position: fixed; bottom: 85px; right: 20px;
-            width: 60px; height: 60px;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
+            position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
             transition: transform 0.2s; z-index: 40;
         }
         .fab:active { transform: scale(0.90); }
@@ -106,19 +63,26 @@
         .dark .loader-overlay { background: rgba(15, 23, 42, 0.85); }
         
         .input-box {
-            width: 100%; padding: 14px 16px;
-            background: #f8fafc; border: 1px solid #cbd5e1;
-            border-radius: 14px; font-size: 0.95rem; color: #334155;
-            outline: none; transition: 0.2s;
+            width: 100%; padding: 14px 16px; background: #f8fafc; border: 1px solid #cbd5e1;
+            border-radius: 14px; font-size: 0.95rem; color: #334155; outline: none; transition: 0.2s;
         }
         .dark .input-box { background: #0f172a; border-color: #334155; color: white; }
         .input-box:focus { background: white; border-color: #3b82f6; ring: 3px solid rgba(59, 130, 246, 0.2); }
         .dark .input-box:focus { background: #1e293b; }
 
         .progress-ring circle { transition: stroke-dashoffset 1s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .slide-in { animation: slideIn 0.4s ease-out forwards; }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px;
+            font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 100; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; gap: 10px; opacity: 0;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-[#0b1120] text-slate-800 dark:text-slate-200 transition-colors duration-300" x-data="vacuumTracker()">
@@ -126,10 +90,7 @@
     <!-- HEADER -->
 	<div class="glass-header p-6 pb-4">
 		<div class="flex justify-between items-start mb-4">
-			<div>
-				<!-- AFTER CODE (New Bigger Logo & Better Alignment) -->
 			<div class="flex items-center gap-4 mb-2">
-				<!-- ✅ PBL Logo Increased (w-14 h-14) -->
 				<div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-xl shadow-blue-500/20 ring-2 ring-white dark:ring-white/10 overflow-hidden p-1">
 					<img src="pbl-logo.png" alt="PBL Logo" class="w-full h-full object-contain">
 				</div>
@@ -138,15 +99,11 @@
 					<p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mt-1">Vacuum Tracker</p>
 				</div>
 			</div>
-            </div>
             
             <div class="flex items-center gap-4">
-                <!-- Theme Toggle -->
                 <button @click="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-yellow-400 transition hover:scale-110 shadow-sm">
                     <i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
                 </button>
-
-                <!-- Progress Circle -->
                 <div class="relative w-12 h-12">
                     <svg class="w-full h-full" viewBox="0 0 100 100">
                         <circle class="text-slate-200 dark:text-slate-700 stroke-current" stroke-width="10" cx="50" cy="50" r="40" fill="transparent"></circle>
@@ -157,7 +114,6 @@
             </div>
         </div>
 
-        <!-- 🗓️ CYCLE SCHEDULE BANNER (UPDATED FOR 4-MONTH CYCLE) -->
         <div class="schedule-banner">
             <div class="flex items-center gap-3.5">
                 <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 shadow-sm">
@@ -175,7 +131,6 @@
             </div>
         </div>
 
-        <!-- Search Bar -->
         <div class="relative mt-5">
             <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400 text-sm"></i>
             <input type="text" x-model="search" placeholder="Search Asset ID..." 
@@ -186,9 +141,7 @@
     <!-- MAIN CONTENT -->
     <div class="px-4 mt-4 pb-24 relative z-10 space-y-4">
         
-        <!-- Summary Pills -->
         <div class="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
-            <!-- Completed Pill -->
             <div @click="toggleFilter('DONE')" 
                  class="cursor-pointer px-5 py-2.5 rounded-full shadow-sm border flex items-center gap-2 whitespace-nowrap transition-all"
                  :class="filterStatus === 'DONE' ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 ring-1 ring-emerald-500' : 'bg-white dark:bg-dark_surface border-slate-200 dark:border-slate-700 hover:border-emerald-300'">
@@ -196,7 +149,6 @@
                 <span class="text-xs font-bold text-slate-700 dark:text-white"><span x-text="doneCount" class="text-emerald-600 dark:text-emerald-400 text-sm">0</span> Completed</span>
             </div>
 
-            <!-- Pending Pill -->
             <div @click="toggleFilter('PENDING')"
                  class="cursor-pointer px-5 py-2.5 rounded-full shadow-sm border flex items-center gap-2 whitespace-nowrap transition-all"
                  :class="filterStatus === 'PENDING' ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-500 ring-1 ring-amber-500' : 'bg-white dark:bg-dark_surface border-slate-200 dark:border-slate-700 hover:border-amber-300'">
@@ -205,13 +157,11 @@
             </div>
         </div>
 
-        <!-- Loader -->
         <div x-show="loading" class="py-12 text-center">
             <div class="w-12 h-12 border-4 border-blue-100 dark:border-slate-700 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
             <p class="text-xs text-slate-400 font-bold uppercase tracking-wider animate-pulse">Initializing Database...</p>
         </div>
 
-        <!-- LIST -->
         <div class="space-y-3">
             <template x-for="(pc, index) in filteredList" :key="pc.id">
                 <div class="pc-card p-5 flex justify-between items-center slide-in"
@@ -251,7 +201,6 @@
                         </template>
                     </div>
 
-                    <!-- Loading Overlay on Item -->
                     <div x-show="pc.updating" class="loader-overlay rounded-xl">
                         <i class="fa-solid fa-circle-notch fa-spin text-blue-600 text-2xl"></i>
                         <p class="text-[10px] font-bold text-slate-500 mt-2 uppercase">Saving...</p>
@@ -259,7 +208,6 @@
                 </div>
             </template>
             
-            <!-- Empty State -->
             <div x-show="filteredList.length === 0 && !loading" class="text-center py-10 opacity-60">
                 <i class="fa-solid fa-filter text-4xl text-slate-300 dark:text-slate-600 mb-3"></i>
                 <p class="text-sm font-bold text-slate-500 dark:text-slate-400">No records found matching filter.</p>
@@ -285,14 +233,77 @@
                     <p class="text-sm font-bold text-slate-800 dark:text-white">Ashok Singh <span class="text-blue-600 dark:text-blue-400 font-black text-xs px-1 bg-blue-50 dark:bg-blue-900/30 rounded ml-1">IT</span></p>
                 </div>
             </div>
-            <!-- Sync Button -->
-            <button @click="fetchData(true)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/10 text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 transition active:scale-95">
-                <i class="fa-solid fa-rotate" :class="{'fa-spin': isSyncing}"></i>
-            </button>
+            
+            <div class="flex items-center">
+                <!-- Sync Button -->
+                <button @click="fetchData(true)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/10 text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 transition active:scale-95">
+                    <i class="fa-solid fa-rotate" :class="{'fa-spin': isSyncing}"></i>
+                </button>
+                
+                <!-- ✅ NEW: Manual Report Button -->
+                <button @click="openConfirmModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 transition active:scale-95 ml-2 border border-indigo-100 dark:border-indigo-500/30 shadow-sm" :disabled="emailSending">
+                    <i class="fa-regular" :class="emailSending ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i>
+                </button>
+            </div>
         </div>
     </footer>
 
-    <!-- ADD/EDIT MODAL -->
+    <!-- SUCCESS MODAL (AUTO TRIGGER ON 100%) -->
+    <div x-show="showReportModal" x-cloak 
+         class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-90"
+         x-transition:enter-end="opacity-100 scale-100">
+        
+        <div class="bg-white dark:bg-dark_surface w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden relative text-center p-8">
+            <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner animate-bounce">
+                🎉
+            </div>
+            <h3 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Cycle Complete!</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">All systems for <span class="font-bold text-blue-600 dark:text-blue-400">JAN 2026</span> are cleaned.</p>
+            <div class="bg-slate-50 dark:bg-white/5 rounded-xl p-4 mb-6 border border-slate-100 dark:border-white/10">
+                <div class="flex justify-between text-xs mb-2">
+                    <span class="text-slate-500 font-bold uppercase">Total Systems</span>
+                    <span class="text-slate-800 dark:text-white font-black" x-text="pcs.length"></span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-500 font-bold uppercase">Status</span>
+                    <span class="text-emerald-500 font-black">100% DONE</span>
+                </div>
+            </div>
+            <button @click="sendEmailReport()" 
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/30 transition active:scale-95 flex items-center justify-center gap-2"
+                    :disabled="emailSending">
+                <i class="fa-solid" :class="emailSending ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i>
+                <span x-text="emailSending ? 'Sending to Vikas Sir...' : 'Send Final Report'"></span>
+            </button>
+            <button @click="showReportModal = false" class="mt-4 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">Close</button>
+        </div>
+    </div>
+    
+    <!-- ✅ NEW: CONFIRMATION MODAL (MANUAL SEND) -->
+    <div x-show="showConfirmModal" x-cloak 
+         class="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100">
+        
+        <div class="bg-white dark:bg-dark_surface w-full max-w-sm rounded-3xl shadow-2xl p-6 text-center" @click.away="showConfirmModal = false">
+            <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl text-blue-600 dark:text-blue-400">
+                <i class="fa-solid fa-paper-plane"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Send Status Report?</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6 px-4 leading-relaxed">
+                This will send a <span class="font-bold text-slate-700 dark:text-slate-300">Daily Progress Update</span> to the IT Head with current counts.
+            </p>
+            <div class="flex gap-3">
+                <button @click="showConfirmModal = false" class="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-slate-200 transition">Cancel</button>
+                <button @click="sendEmailReport(); showConfirmModal = false" class="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition">Send Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ ADD/EDIT MODAL -->
     <div x-show="showModal" x-cloak 
          class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-md p-0 sm:p-4"
          x-transition:enter="transition ease-out duration-300"
@@ -313,12 +324,10 @@
             </div>
 
             <div class="p-8 space-y-5">
-                
                 <div>
                     <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Asset ID</label>
                     <input type="text" x-model="form.assetId" class="input-box font-mono font-bold uppercase text-lg text-slate-800 dark:text-white tracking-wide" :readonly="mode === 'edit'" placeholder="PBLNET...">
                 </div>
-
                 <div>
                     <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Operating System</label>
                     <div class="relative">
@@ -331,7 +340,6 @@
                         <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-5">
                     <div>
                         <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Status</label>
@@ -349,26 +357,45 @@
                         <input type="date" x-model="form.date" class="input-box" :disabled="form.status !== 'DONE'">
                     </div>
                 </div>
-
                 <div class="pt-2">
                     <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Admin Key 🔐</label>
                     <input type="password" x-model="form.secret" placeholder="Enter PBL2026" class="input-box border-dashed border-2 focus:border-solid focus:border-blue-500">
                 </div>
-
                 <div class="flex gap-3 mt-6 pt-4 border-t border-slate-50 dark:border-white/10">
                     <button x-show="mode === 'edit'" @click="performAction('delete')" class="px-5 bg-red-50 dark:bg-red-900/20 text-red-500 font-bold py-3.5 rounded-xl hover:bg-red-100 transition border border-red-100 dark:border-red-900/30"><i class="fa-solid fa-trash"></i></button>
                     <button @click="performAction('save')" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition active:scale-95 transform flex items-center justify-center gap-2">
                         <span x-text="submitting ? 'Saving...' : 'Save Record'"></span> <i x-show="!submitting" class="fa-solid fa-check"></i>
                     </button>
                 </div>
-
             </div>
         </div>
+    </div>
+    
+    <!-- Toast Notification Container -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toast-msg">Operation Successful</span>
     </div>
 
     <!-- SCRIPT -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzXOvi2tV7IX0scxhSoewZemWgxbHzskbdPtmU2sGfKaVG51_u5519HJMwm--njmksA/exec";  
+        const API_URL = "https://script.google.com/macros/s/AKfycbwTdfxWoSDqXnG1IWxck9QJhBmzxOf7DCFDDD9eqgpbFZeQ_lfFMudILRcJKSML4IyQOQ/exec";  
+
+        // Toast Helper
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.innerText = msg;
+            
+            if(isError) {
+                toast.querySelector('i').className = 'fa-solid fa-circle-exclamation text-rose-400 text-lg';
+            } else {
+                toast.querySelector('i').className = 'fa-solid fa-circle-check text-emerald-400 text-lg';
+            }
+
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
 
         document.addEventListener('alpine:init', () => {
             Alpine.data('vacuumTracker', () => ({
@@ -378,6 +405,9 @@
                 isSyncing: false,
                 submitting: false,
                 showModal: false,
+                showReportModal: false,
+                showConfirmModal: false, // ✅ New State
+                emailSending: false,
                 isDark: false,
                 mode: 'add',
                 filterStatus: 'ALL',
@@ -388,106 +418,60 @@
                         this.isDark = true;
                         document.documentElement.classList.add('dark');
                     }
-
                     const cachedData = localStorage.getItem('vacuum_data');
                     if (cachedData) {
-                        try {
-                            this.pcs = JSON.parse(cachedData);
-                            this.loading = false;
-                        } catch (e) {
-                            console.error("Cache Error", e);
-                            this.loading = true;
-                        }
-                    } else {
-                        this.loading = true;
-                    }
-
+                        try { this.pcs = JSON.parse(cachedData); this.loading = false; } 
+                        catch (e) { this.loading = true; }
+                    } else { this.loading = true; }
                     this.fetchData(false); 
                 },
 
                 toggleTheme() {
                     this.isDark = !this.isDark;
-                    if(this.isDark) {
-                        document.documentElement.classList.add('dark');
-                        localStorage.setItem('theme', 'dark');
-                    } else {
-                        document.documentElement.classList.remove('dark');
-                        localStorage.setItem('theme', 'light');
-                    }
+                    if(this.isDark) { document.documentElement.classList.add('dark'); localStorage.setItem('theme', 'dark'); } 
+                    else { document.documentElement.classList.remove('dark'); localStorage.setItem('theme', 'light'); }
                 },
 
                 toggleFilter(status) {
-                    if (this.filterStatus === status) {
-                        this.filterStatus = 'ALL';
-                    } else {
-                        this.filterStatus = status;
-                    }
+                    this.filterStatus = (this.filterStatus === status) ? 'ALL' : status;
                 },
 
                 async fetchData(forceRefresh = false) {
                     if (forceRefresh) this.isSyncing = true;
-                    
                     try {
                         const res = await fetch(API_URL + '?action=getVacuumData');
                         const data = await res.json();
-                        
                         const processedData = data.pcs.map(p => {
                             const isDone = (p.status && String(p.status).trim().toUpperCase() === 'DONE');
-                            let displayDate = isDone ? p.date : '';
-
-                            return {
-                                id: p.id,
-                                os: p.os,
-                                status: isDone ? 'DONE' : 'PENDING', 
-                                date: displayDate,
-                                updating: false
-                            };
+                            return { id: p.id, os: p.os, status: isDone ? 'DONE' : 'PENDING', date: isDone ? p.date : '', updating: false };
                         });
-
                         this.pcs = processedData;
                         localStorage.setItem('vacuum_data', JSON.stringify(this.pcs));
-
-                    } catch (e) { 
-                        console.error("Sync Failed", e);
-                        if (forceRefresh) alert("Sync Failed: Check Internet");
-                    } finally { 
-                        this.loading = false; 
-                        this.isSyncing = false;
-                    }
+                        if(forceRefresh) showToast("Data Synced Successfully");
+                    } catch (e) { if (forceRefresh) showToast("Sync Failed", true); } 
+                    finally { this.loading = false; this.isSyncing = false; }
                 },
 
                 formatDateDisplay(dateStr) {
-				if (!dateStr || dateStr === "N/A") return '';
-
-				// Sheet format handle karo: "03/Jan/26" ya "12/Jan/2026"
-				const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
-				
-				// Agar date mein alphabet hai (Jan, Feb etc) to usse tod kar padho
-				if (/[a-zA-Z]/.test(dateStr)) {
-					const parts = dateStr.split(/[-/ ]/);
-					if (parts.length === 3) {
-						let day = parseInt(parts[0]);
-						let monthStr = parts[1].toLowerCase().substring(0, 3);
-						let year = parseInt(parts[2]);
-						
-						// Year fix (agar 26 hai to 2026 karo)
-						if (year < 100) year += 2000;
-						
-						if (!isNaN(day) && months.hasOwnProperty(monthStr)) {
-							let d = new Date(year, months[monthStr], day);
-							return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-						}
-					}
-				}
-
-				// Fallback: Agar normal date hai
-				let dateObj = new Date(dateStr);
-				if (!isNaN(dateObj.getTime())) {
-					return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-				}
-				
-				return dateStr;
-			},
+                    if (!dateStr || dateStr === "N/A") return '';
+                    const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+                    if (/[a-zA-Z]/.test(dateStr)) {
+                        const parts = dateStr.split(/[-/ ]/);
+                        if (parts.length === 3) {
+                            let day = parseInt(parts[0]);
+                            let monthStr = parts[1].toLowerCase().substring(0, 3);
+                            let year = parseInt(parts[2]);
+                            if (year < 100) year += 2000;
+                            if (!isNaN(day) && months.hasOwnProperty(monthStr)) {
+                                let d = new Date(year, months[monthStr], day);
+                                return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                            }
+                        }
+                    }
+                    let dateObj = new Date(dateStr);
+                    if (!isNaN(dateObj.getTime())) return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                    return dateStr;
+                },
 
                 convertDateForInput(dateStr) {
                     if (!dateStr || dateStr === "N/A") return '';
@@ -499,12 +483,9 @@
                 },
 
                 openModal(mode, item = null) {
-                    this.mode = mode;
-                    this.form.secret = ''; 
+                    this.mode = mode; this.form.secret = ''; 
                     if (mode === 'edit' && item) {
-                        this.form.assetId = item.id;
-                        this.form.os = item.os;
-                        this.form.status = item.status;
+                        this.form.assetId = item.id; this.form.os = item.os; this.form.status = item.status;
                         this.form.date = this.convertDateForInput(item.date); 
                     } else {
                         this.form = { assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' };
@@ -512,65 +493,85 @@
                     this.showModal = true;
                 },
 
+                openConfirmModal() {
+                    this.showConfirmModal = true;
+                },
+
                 handleStatusChange() {
-				if (this.form.status === 'DONE') {
-					// Local Date nikalne ka sahi tarika
-					const today = new Date();
-					const year = today.getFullYear();
-					const month = String(today.getMonth() + 1).padStart(2, '0');
-					const day = String(today.getDate()).padStart(2, '0');
-					this.form.date = `${year}-${month}-${day}`;
-				} else {
-					this.form.date = '';
-				}
-			},
+                    if (this.form.status === 'DONE') {
+                        const today = new Date();
+                        const year = today.getFullYear();
+                        const month = String(today.getMonth() + 1).padStart(2, '0');
+                        const day = String(today.getDate()).padStart(2, '0');
+                        this.form.date = `${year}-${month}-${day}`;
+                    } else { this.form.date = ''; }
+                },
+
+                async sendEmailReport() {
+                    this.emailSending = true;
+                    showToast("Sending Email Report...");
+                    
+                    const date = new Date();
+                    const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                    const cycleName = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+
+                    const payload = {
+                        action: 'sendReport',
+                        cycle: cycleName,
+                        totalCount: this.pcs.length,
+                        doneCount: this.doneCount,
+                        pendingCount: this.pendingCount
+                    };
+
+                    try {
+                        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                        const result = await res.json();
+                        if(result.status === 'success') {
+                            showToast("Email Sent Successfully!");
+                            this.showReportModal = false;
+                        } else { showToast("Error Sending Email", true); }
+                    } catch(e) { showToast("Network Error", true); } 
+                    finally { this.emailSending = false; }
+                },
 
                 async performAction(type) {
-                    if (this.form.secret !== 'PBL2026') { alert("❌ Invalid Admin Key!"); return; }
+                    if (this.form.secret !== 'PBL2026') { showToast("Invalid Admin Key", true); return; }
                     this.submitting = true;
 
-                 // Date ko "12/Jan/2026" format mein convert karo safe side ke liye
-				let payloadDate = this.form.date;
-				if (this.form.date && this.form.status === 'DONE') {
-					const d = new Date(this.form.date);
-					const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-					// Date/Month/Year explicit string banao
-					payloadDate = `${d.getDate()}/${monthNames[d.getMonth()]}/${d.getFullYear()}`;
-				}
+                    let payloadDate = this.form.date;
+                    if (this.form.date && this.form.status === 'DONE') {
+                        const d = new Date(this.form.date);
+                        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        payloadDate = `${d.getDate()}/${monthNames[d.getMonth()]}/${d.getFullYear()}`;
+                    }
 
-				const payload = {
-					action: 'handleVacuum',
-					type: type === 'delete' ? 'delete' : 'save',
-					assetId: this.form.assetId,
-					os: this.form.os,
-					status: this.form.status,
-					date: payloadDate, // Ab ye "12/Jan/2026" jayega, jo sheet kabhi galat nahi padhega
-					secret: this.form.secret
-				};
+                    const payload = {
+                        action: 'handleVacuum', type: type === 'delete' ? 'delete' : 'save',
+                        assetId: this.form.assetId, os: this.form.os, status: this.form.status,
+                        date: payloadDate, secret: this.form.secret
+                    };
 
                     try {
                         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                         const result = await res.json();
                         if (result.status === 'success') {
                             this.showModal = false;
-                            this.fetchData(true);
-                        } else {
-                            alert("Error: " + result.message);
-                        }
-                    } catch (e) { alert("Network Error"); } 
+                            showToast(type === 'delete' ? "Record Deleted" : "Record Saved");
+                            await this.fetchData(true); 
+
+                            if (this.pendingCount === 0 && this.pcs.length > 0 && type === 'save') {
+                                setTimeout(() => { this.showReportModal = true; }, 500);
+                            }
+                        } else { showToast(result.message, true); }
+                    } catch (e) { showToast("Network Error", true); } 
                     finally { this.submitting = false; }
                 },
 
                 get filteredList() {
                     let result = this.pcs;
-                    if (this.filterStatus === 'DONE') {
-                        result = result.filter(p => p.status === 'DONE');
-                    } else if (this.filterStatus === 'PENDING') {
-                        result = result.filter(p => p.status !== 'DONE');
-                    }
-                    if (this.search) {
-                        result = result.filter(p => p.id.toLowerCase().includes(this.search.toLowerCase()));
-                    }
+                    if (this.filterStatus === 'DONE') result = result.filter(p => p.status === 'DONE');
+                    else if (this.filterStatus === 'PENDING') result = result.filter(p => p.status !== 'DONE');
+                    if (this.search) result = result.filter(p => p.id.toLowerCase().includes(this.search.toLowerCase()));
                     return result;
                 },
                 
