@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PBL CleanOps | Vacuum Tracker</title>
     
+    <!-- ✅ Favicon Added -->
+    <link rel="icon" type="image/png" href="pbl-logo.png">
+     
     <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -52,7 +55,7 @@
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             border: 1px solid #bae6fd;
             border-radius: 16px;
-            padding: 12px 16px;
+            padding: 14px 16px;
             margin-top: 15px;
             display: flex;
             justify-content: space-between;
@@ -121,18 +124,20 @@
 <body class="bg-slate-50 dark:bg-[#0b1120] text-slate-800 dark:text-slate-200 transition-colors duration-300" x-data="vacuumTracker()">
 
     <!-- HEADER -->
-    <div class="glass-header p-6 pb-4">
-        <div class="flex justify-between items-start mb-4">
-            <div>
-                <div class="flex items-center gap-3 mb-1">
-                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                        <i class="fa-solid fa-wind text-white text-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-black tracking-tight text-slate-800 dark:text-white leading-none">PBL CleanOps</h1>
-                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mt-1">System Vacuum Tracker</p>
-                    </div>
-                </div>
+	<div class="glass-header p-6 pb-4">
+		<div class="flex justify-between items-start mb-4">
+			<div>
+				<!-- AFTER CODE (New Bigger Logo & Better Alignment) -->
+			<div class="flex items-center gap-4 mb-2">
+				<!-- ✅ PBL Logo Increased (w-14 h-14) -->
+				<div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-xl shadow-blue-500/20 ring-2 ring-white dark:ring-white/10 overflow-hidden p-1">
+					<img src="pbl-logo.png" alt="PBL Logo" class="w-full h-full object-contain">
+				</div>
+				<div class="flex flex-col justify-center">
+					<h1 class="text-2xl font-black tracking-tight text-slate-800 dark:text-white leading-none">CleanOps</h1>
+					<p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mt-1">Vacuum Tracker</p>
+				</div>
+			</div>
             </div>
             
             <div class="flex items-center gap-4">
@@ -152,21 +157,21 @@
             </div>
         </div>
 
-        <!-- 🗓️ CYCLE SCHEDULE BANNER -->
+        <!-- 🗓️ CYCLE SCHEDULE BANNER (UPDATED FOR 4-MONTH CYCLE) -->
         <div class="schedule-banner">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 shadow-sm">
-                    <i class="fa-regular fa-calendar-check text-sm"></i>
+            <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 shadow-sm">
+                    <i class="fa-solid fa-arrows-rotate text-sm"></i>
                 </div>
                 <div>
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wide">Current Cycle</p>
-                    <p class="text-sm font-black text-slate-800 dark:text-white">JAN 2026</p>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wide">4-Month Cycles</p>
+                    <p class="text-xs font-black text-slate-800 dark:text-white mt-0.5">JAN • MAY • SEPT</p>
                 </div>
             </div>
-            <div class="h-8 w-px bg-slate-300 dark:bg-white/10"></div>
+            <div class="h-8 w-px bg-slate-300 dark:bg-white/10 mx-1"></div>
             <div class="text-right">
                 <p class="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-bold flex items-center justify-end gap-1">Next Due <i class="fa-solid fa-arrow-right text-[8px]"></i></p>
-                <p class="text-sm font-black text-slate-700 dark:text-slate-300">JULY 2026</p>
+                <p class="text-sm font-black text-slate-700 dark:text-slate-300 mt-0.5">MAY 2026</p>
             </div>
         </div>
 
@@ -181,7 +186,7 @@
     <!-- MAIN CONTENT -->
     <div class="px-4 mt-4 pb-24 relative z-10 space-y-4">
         
-        <!-- Summary Pills (Interactive Filters) -->
+        <!-- Summary Pills -->
         <div class="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
             <!-- Completed Pill -->
             <div @click="toggleFilter('DONE')" 
@@ -200,7 +205,7 @@
             </div>
         </div>
 
-        <!-- Loader (Shown only on first load/empty cache) -->
+        <!-- Loader -->
         <div x-show="loading" class="py-12 text-center">
             <div class="w-12 h-12 border-4 border-blue-100 dark:border-slate-700 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
             <p class="text-xs text-slate-400 font-bold uppercase tracking-wider animate-pulse">Initializing Database...</p>
@@ -280,7 +285,7 @@
                     <p class="text-sm font-bold text-slate-800 dark:text-white">Ashok Singh <span class="text-blue-600 dark:text-blue-400 font-black text-xs px-1 bg-blue-50 dark:bg-blue-900/30 rounded ml-1">IT</span></p>
                 </div>
             </div>
-            <!-- Sync Button with Spinner Logic -->
+            <!-- Sync Button -->
             <button @click="fetchData(true)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/10 text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 transition active:scale-95">
                 <i class="fa-solid fa-rotate" :class="{'fa-spin': isSyncing}"></i>
             </button>
@@ -369,37 +374,34 @@
             Alpine.data('vacuumTracker', () => ({
                 pcs: [],
                 search: '',
-                loading: false, // Initial full-screen loader
-                isSyncing: false, // Background sync indicator
+                loading: false,
+                isSyncing: false,
                 submitting: false,
                 showModal: false,
                 isDark: false,
                 mode: 'add',
-                filterStatus: 'ALL', // 'ALL', 'DONE', 'PENDING'
+                filterStatus: 'ALL',
                 form: { assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' },
 
                 init() { 
-                    // Theme Logic
                     if(localStorage.getItem('theme') === 'dark') {
                         this.isDark = true;
                         document.documentElement.classList.add('dark');
                     }
 
-                    // ⚡ CACHE FIRST STRATEGY ⚡
                     const cachedData = localStorage.getItem('vacuum_data');
                     if (cachedData) {
                         try {
                             this.pcs = JSON.parse(cachedData);
-                            this.loading = false; // Show content immediately
+                            this.loading = false;
                         } catch (e) {
                             console.error("Cache Error", e);
-                            this.loading = true; // Fallback to loader if cache corrupt
+                            this.loading = true;
                         }
                     } else {
-                        this.loading = true; // First time visit
+                        this.loading = true;
                     }
 
-                    // Fetch fresh data in background
                     this.fetchData(false); 
                 },
 
@@ -414,17 +416,15 @@
                     }
                 },
 
-                // New Toggle Filter Function
                 toggleFilter(status) {
                     if (this.filterStatus === status) {
-                        this.filterStatus = 'ALL'; // Toggle off if clicked again
+                        this.filterStatus = 'ALL';
                     } else {
-                        this.filterStatus = status; // Set new filter
+                        this.filterStatus = status;
                     }
                 },
 
                 async fetchData(forceRefresh = false) {
-                    // Only show spinner if forced (clicked refresh btn) or if initial load
                     if (forceRefresh) this.isSyncing = true;
                     
                     try {
@@ -445,8 +445,6 @@
                         });
 
                         this.pcs = processedData;
-                        
-                        // ✅ SAVE TO LOCAL STORAGE
                         localStorage.setItem('vacuum_data', JSON.stringify(this.pcs));
 
                     } catch (e) { 
@@ -459,22 +457,37 @@
                 },
 
                 formatDateDisplay(dateStr) {
-                    if (!dateStr || dateStr === "N/A") return '';
-                    let dateObj = new Date(dateStr);
-                    if (isNaN(dateObj.getTime())) {
-                        const parts = String(dateStr).split(/[-/]/);
-                        if(parts.length === 3) {
-                            const day = parseInt(parts[0], 10);
-                            const month = parseInt(parts[1], 10) - 1;
-                            const year = parseInt(parts[2], 10);
-                            dateObj = new Date(year, month, day);
-                        }
-                    }
-                    if (!isNaN(dateObj.getTime())) {
-                        return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                    }
-                    return dateStr;
-                },
+				if (!dateStr || dateStr === "N/A") return '';
+
+				// Sheet format handle karo: "03/Jan/26" ya "12/Jan/2026"
+				const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+				
+				// Agar date mein alphabet hai (Jan, Feb etc) to usse tod kar padho
+				if (/[a-zA-Z]/.test(dateStr)) {
+					const parts = dateStr.split(/[-/ ]/);
+					if (parts.length === 3) {
+						let day = parseInt(parts[0]);
+						let monthStr = parts[1].toLowerCase().substring(0, 3);
+						let year = parseInt(parts[2]);
+						
+						// Year fix (agar 26 hai to 2026 karo)
+						if (year < 100) year += 2000;
+						
+						if (!isNaN(day) && months.hasOwnProperty(monthStr)) {
+							let d = new Date(year, months[monthStr], day);
+							return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+						}
+					}
+				}
+
+				// Fallback: Agar normal date hai
+				let dateObj = new Date(dateStr);
+				if (!isNaN(dateObj.getTime())) {
+					return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+				}
+				
+				return dateStr;
+			},
 
                 convertDateForInput(dateStr) {
                     if (!dateStr || dateStr === "N/A") return '';
@@ -500,33 +513,47 @@
                 },
 
                 handleStatusChange() {
-                    if (this.form.status === 'DONE') {
-                        this.form.date = new Date().toISOString().split('T')[0];
-                    } else {
-                        this.form.date = '';
-                    }
-                },
+				if (this.form.status === 'DONE') {
+					// Local Date nikalne ka sahi tarika
+					const today = new Date();
+					const year = today.getFullYear();
+					const month = String(today.getMonth() + 1).padStart(2, '0');
+					const day = String(today.getDate()).padStart(2, '0');
+					this.form.date = `${year}-${month}-${day}`;
+				} else {
+					this.form.date = '';
+				}
+			},
 
                 async performAction(type) {
                     if (this.form.secret !== 'PBL2026') { alert("❌ Invalid Admin Key!"); return; }
                     this.submitting = true;
 
-                    const payload = {
-                        action: 'handleVacuum',
-                        type: type === 'delete' ? 'delete' : 'save',
-                        assetId: this.form.assetId,
-                        os: this.form.os,
-                        status: this.form.status,
-                        date: this.form.date, 
-                        secret: this.form.secret
-                    };
+                 // Date ko "12/Jan/2026" format mein convert karo safe side ke liye
+				let payloadDate = this.form.date;
+				if (this.form.date && this.form.status === 'DONE') {
+					const d = new Date(this.form.date);
+					const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+					// Date/Month/Year explicit string banao
+					payloadDate = `${d.getDate()}/${monthNames[d.getMonth()]}/${d.getFullYear()}`;
+				}
+
+				const payload = {
+					action: 'handleVacuum',
+					type: type === 'delete' ? 'delete' : 'save',
+					assetId: this.form.assetId,
+					os: this.form.os,
+					status: this.form.status,
+					date: payloadDate, // Ab ye "12/Jan/2026" jayega, jo sheet kabhi galat nahi padhega
+					secret: this.form.secret
+				};
 
                     try {
                         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                         const result = await res.json();
                         if (result.status === 'success') {
                             this.showModal = false;
-                            this.fetchData(true); // Refresh data and cache after save
+                            this.fetchData(true);
                         } else {
                             alert("Error: " + result.message);
                         }
@@ -536,19 +563,14 @@
 
                 get filteredList() {
                     let result = this.pcs;
-
-                    // Filter by Status based on Pill Click
                     if (this.filterStatus === 'DONE') {
                         result = result.filter(p => p.status === 'DONE');
                     } else if (this.filterStatus === 'PENDING') {
                         result = result.filter(p => p.status !== 'DONE');
                     }
-
-                    // Filter by Search (works with Status filter)
                     if (this.search) {
                         result = result.filter(p => p.id.toLowerCase().includes(this.search.toLowerCase()));
                     }
-
                     return result;
                 },
                 
