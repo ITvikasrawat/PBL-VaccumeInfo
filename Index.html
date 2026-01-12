@@ -201,9 +201,11 @@
                         <div class="min-w-0">
                             <h3 class="font-bold text-base text-slate-800 dark:text-white tracking-tight truncate" x-text="pc.id"></h3>
                             <div class="flex items-center gap-2 mt-1">
-                                <span class="bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide flex items-center gap-1">
-                                    <i class="fa-brands fa-windows"></i> <span x-text="pc.os"></span>
-                                </span>
+                                <!-- AFTER (Smart Icon based on OS Name) -->
+							<span class="bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide flex items-center gap-1">
+								<!-- 👇 Dynamic Class Binding Here -->
+								<i :class="getOsIcon(pc.os)"></i> <span x-text="pc.os"></span>
+							</span>
                             </div>
                         </div>
                     </div>
@@ -365,12 +367,15 @@
                 <div>
                     <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Operating System</label>
                     <div class="relative">
-                        <select x-model="form.os" class="input-box cursor-pointer appearance-none">
-                            <option>Windows 11 Pro</option>
-                            <option>Windows 10</option>
-                            <option>Windows XP</option>
-                            <option>Windows 7</option>
-                        </select>
+                        <!-- AFTER (Sheet Data Matched + Emojis) -->
+						<select x-model="form.os" class="input-box cursor-pointer appearance-none font-bold text-slate-700 dark:text-white">
+							<option value="Windows 11 Pro">🪟 Windows 11 Pro</option>
+							<option value="Windows XP">💾 Windows XP</option>
+							<option value="Windows Server 2019">⚙️ Windows Server 2019</option>
+							<option value="Windows Server 2003">📼 Windows Server 2003</option>
+							<option value="OpenSuse">🦎 OpenSuse</option>
+							<option value="Windows 10">💻 Windows 10</option>
+						</select>
                         <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
@@ -516,6 +521,18 @@
                     if(!isNaN(d.getTime())) return d.toISOString().split('T')[0];
                     return ''; 
                 },
+				
+				// ✅ NEW: OS Icon Logic 🐧🪟⚙️
+					getOsIcon(osName) {
+						if (!osName) return 'fa-solid fa-desktop'; // Default
+						const os = osName.toLowerCase();
+
+						if (os.includes('server')) return 'fa-solid fa-server'; // Server ⚙️
+						if (os.includes('opensuse') || os.includes('linux')) return 'fa-brands fa-linux'; // Linux 🐧
+						if (os.includes('windows')) return 'fa-brands fa-windows'; // Windows 🪟
+						
+						return 'fa-solid fa-desktop'; // Fallback
+					},
 
                 openModal(mode, item = null) {
                     this.mode = mode; this.form.secret = ''; 
