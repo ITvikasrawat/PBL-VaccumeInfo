@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PBL VacuumOps | Fixed Header</title>
+    <title>PBL VacuumOps | Fixed Layout</title>
     
     <!-- ✅ Favicon -->
     <link rel="icon" type="image/png" href="pbl-logo.png">
@@ -20,7 +20,7 @@
             theme: {
                 extend: {
                     colors: {
-                        // 🌹 THEME: Rose Red (Professional Red)
+                        // 🌹 THEME: Rose Red
                         brand_primary: '#e11d48', // Rose-600
                         brand_dark: '#be123c',    // Rose-700
                         brand_light: '#fff1f2',   // Rose-50
@@ -29,16 +29,11 @@
                     fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
                     animation: {
                         'slide-up': 'slideUp 0.3s ease-out forwards',
-                        'fade-in': 'fadeIn 0.2s ease-out forwards',
                     },
                     keyframes: {
                         slideUp: {
                             'from': { opacity: 0, transform: 'translateY(10px)' },
                             'to': { opacity: 1, transform: 'translateY(0)' }
-                        },
-                        fadeIn: {
-                            'from': { opacity: 0, transform: 'scale(0.95)' },
-                            'to': { opacity: 1, transform: 'scale(1)' }
                         }
                     }
                 }
@@ -50,28 +45,28 @@
         [x-cloak] { display: none !important; }
         body { background-color: #fff1f2; -webkit-tap-highlight-color: transparent; }
         
-        /* 🔥 Gradient Background */
+        /* 🔥 Header Gradient */
         .bg-gradient-brand { background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); }
 
         /* Glass Card Style */
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 30px -5px rgba(225, 29, 72, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 4px 15px -3px rgba(225, 29, 72, 0.15);
             transition: transform 0.2s;
         }
         .dark .glass-card {
             background: rgba(30, 41, 59, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px -3px rgba(0,0,0,0.5);
         }
         .glass-card:active { transform: scale(0.98); }
 
         /* Input Fields */
         .input-box {
-            width: 100%; padding: 14px; background: #fff1f2; border: 2px solid transparent;
-            border-radius: 14px; font-size: 0.9rem; color: #be123c; outline: none; transition: 0.2s; font-weight: 700;
+            width: 100%; padding: 12px; background: #fff1f2; border: 2px solid transparent;
+            border-radius: 12px; font-size: 0.9rem; color: #be123c; outline: none; transition: 0.2s; font-weight: 700;
         }
         .dark .input-box { background: #0f172a; color: white; }
         .input-box:focus { background: white; border-color: #e11d48; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.15); }
@@ -83,21 +78,18 @@
 <body class="text-slate-800 transition-colors duration-300 min-h-screen pb-32 font-sans bg-brand_light dark:bg-dark_bg dark:text-slate-200" x-data="vacuumTracker()">
 
     <!-- 
-      HEADER SECTION (FIXED SPACING)
-      - `pt-14`: Top Padding badha di hai taaki status bar se text na takraye.
-      - `pb-28`: Bottom Padding taaki neeche wala card overlap kare.
+      HEADER SECTION
+      - Padding Top (pt-14) taaki status bar se text na takraye.
     -->
     <header class="relative pt-14 pb-28 px-5 overflow-hidden rounded-b-[3rem] shadow-xl bg-gradient-brand z-30 transition-all duration-300"
             :class="showSearchInput ? 'pb-32' : 'pb-28'">
         
-        <!-- Background Decoration -->
         <div class="absolute top-[-20px] left-[-20px] w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
         <div class="absolute bottom-[-10px] right-[-10px] w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
 
         <div class="relative z-10">
-            <!-- Top Row: Logo + Icons -->
+            <!-- Top Row -->
             <div class="flex justify-between items-center">
-                <!-- Left: Logo & Name -->
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner border border-white/20">
                         <img src="pbl-logo.png" alt="Logo" class="w-6 h-6 object-contain">
@@ -110,28 +102,20 @@
                     </div>
                 </div>
                 
-                <!-- Right: Search Icon + Theme -->
-                <div class="flex gap-3">
-                    <!-- Search Toggle Button -->
+                <div class="flex gap-2">
                     <button @click="showSearchInput = !showSearchInput" 
                             class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/10 active:scale-95 transition"
                             :class="showSearchInput ? 'bg-white/30' : ''">
                         <i class="fa-solid" :class="showSearchInput ? 'fa-xmark' : 'fa-magnifying-glass'"></i>
                     </button>
-
-                    <!-- Theme Toggle -->
                     <button @click="toggleTheme()" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/10 active:scale-95 transition">
                         <i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- 
-               SEARCH INPUT (Conditional Show)
-               - Ye sirf tab dikhega jab search icon dabaya jayega.
-               - `mt-5`: Title se thoda door rakha hai.
-            -->
-            <div x-show="showSearchInput" x-collapse x-cloak class="mt-5 animate-fade-in">
+            <!-- Expandable Search -->
+            <div x-show="showSearchInput" x-collapse x-cloak class="mt-5 animate-slide-up">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
                     <input type="text" x-model="search" placeholder="Search Asset ID..." 
@@ -141,37 +125,26 @@
         </div>
     </header>
 
-    <!-- 
-      MAIN CONTENT 
-      - `-mt-16`: Card ko header ke upar overlap karane ke liye.
-    -->
+    <!-- MAIN CONTENT -->
     <main class="px-4 -mt-16 relative z-40 max-w-lg mx-auto space-y-5">
 
-        <!-- 
-           DASHBOARD STRIP (Bada & Pop-out) 
-           - Red & White Theme
-        -->
+        <!-- DASHBOARD STRIP (Compact + Pop-out) -->
         <div class="glass-card relative px-5 py-6 rounded-[2.5rem] flex items-center justify-between shadow-2xl overflow-visible">
             
-            <!-- Left: Current & Next Cycle -->
+            <!-- Cycle Info -->
             <div class="flex flex-col gap-1.5">
                 <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                     <i class="fa-solid fa-calendar-days text-sm text-brand_primary"></i>
                     <p class="text-[10px] font-black uppercase tracking-widest">Current</p>
                 </div>
                 <p class="text-xl font-black text-brand_primary leading-none" x-text="currentCycleName">JAN 2026</p>
-                
-                <!-- Next Badge -->
                 <div class="flex items-center gap-1.5 mt-1 bg-rose-50 dark:bg-white/10 px-3 py-1 rounded-full w-fit border border-rose-100 dark:border-white/5">
                     <span class="text-[9px] font-bold text-slate-400 uppercase">Next:</span>
                     <span class="text-[10px] font-bold text-slate-700 dark:text-white" x-text="nextCycleName">MAY 2026</span>
                 </div>
             </div>
 
-            <!-- 
-               Center: POP-OUT CIRCLE
-               - Border se bahar nikalne ke liye `absolute` aur `-top` use kiya.
-            -->
+            <!-- Pop-out Circle -->
             <div class="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-white dark:bg-[#1e293b] rounded-full p-2 shadow-[0_10px_40px_rgba(225,29,72,0.3)] flex items-center justify-center z-50 border-4 border-rose-50 dark:border-slate-700">
                 <div class="relative w-full h-full">
                     <svg class="w-full h-full transform -rotate-90">
@@ -185,68 +158,85 @@
                 </div>
             </div>
 
-            <!-- Right: Filter Buttons -->
+            <!-- Filter Buttons -->
             <div class="flex gap-2">
-                <!-- Done (Green) -->
                 <button @click="toggleFilter('DONE')" 
                         class="flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all shadow-md active:scale-95"
                         :class="filterStatus === 'DONE' ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'">
                     <i class="fa-solid fa-check text-sm mb-0.5"></i>
                     <span class="text-xs font-black" x-text="doneCount">0</span>
                 </button>
-                
-                <!-- Pending (Red) -->
                 <button @click="toggleFilter('PENDING')" 
                         class="flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all shadow-md active:scale-95"
-                        :class="filterStatus === 'PENDING' ? 'bg-brand_primary text-white shadow-rose-200' : 'bg-rose-50 text-brand_primary hover:bg-rose-100'">
+                        :class="filterStatus === 'PENDING' ? 'bg-rose-500 text-white shadow-rose-200' : 'bg-rose-50 text-rose-500 hover:bg-rose-100'">
                     <i class="fa-regular fa-clock text-sm mb-0.5"></i>
                     <span class="text-xs font-black" x-text="pendingCount">0</span>
                 </button>
             </div>
         </div>
 
-        <!-- LOADING SPINNER -->
+        <!-- LOADING -->
         <div x-show="loading" class="py-8 text-center">
             <div class="w-10 h-10 border-4 border-rose-200 border-t-brand_primary rounded-full animate-spin mx-auto mb-2"></div>
             <p class="text-[10px] font-bold text-brand_primary uppercase tracking-widest animate-pulse">Syncing Database...</p>
         </div>
 
-        <!-- ASSET LIST -->
+        <!-- 
+           ASSET LIST (REDESIGNED FOR VISIBILITY)
+           - ID: Barcode Icon added, No Truncate (Poora dikhega).
+           - OS: No Wrap (Ek line me).
+        -->
         <div class="space-y-3 pb-28 pt-4">
             <template x-for="(pc, index) in filteredList" :key="pc.systemName + index">
                 <div class="glass-card p-4 rounded-[1.2rem] relative overflow-hidden group animate-slide-up flex items-center justify-between shadow-sm active:scale-[0.99] transition-transform"
                      :style="`animation-delay: ${index * 30}ms`"
-                     :class="pc.status === 'DONE' ? 'border-l-[5px] border-l-emerald-500' : 'border-l-[5px] border-l-brand_primary'"
+                     :class="pc.status === 'DONE' ? 'border-l-[5px] border-l-emerald-500' : 'border-l-[5px] border-l-rose-500'"
                      @click="openModal('edit', pc)">
                     
                     <div class="flex items-center gap-4 w-full overflow-hidden">
                         <!-- Icon -->
                         <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-sm transition-colors shrink-0"
-                             :class="pc.status === 'DONE' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-brand_primary'">
+                             :class="pc.status === 'DONE' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-600'">
                             <i class="fa-solid" :class="pc.status === 'DONE' ? 'fa-check' : 'fa-hourglass-half'"></i>
                         </div>
 
-                        <div class="min-w-0 flex-1">
-                            <!-- System Name -->
+                        <!-- Details (Expanded) -->
+                        <div class="flex-1 min-w-0">
+                            <!-- Name -->
                             <h3 class="font-extrabold text-base text-slate-800 dark:text-white truncate" x-text="pc.systemName"></h3>
                             
-                            <!-- Asset ID & OS -->
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-600 truncate" 
-                                      x-text="pc.assetId ? pc.assetId : 'No ID'"></span>
-                                <span class="text-[9px] font-bold text-slate-400 uppercase flex items-center gap-1">
-                                    <i :class="getOsIcon(pc.os)"></i> <span x-text="pc.os"></span>
-                                </span>
+                            <!-- 
+                               ASSET ID FIX:
+                               - `fa-barcode` icon lagaya.
+                               - `w-fit` lagaya taaki width limit na ho.
+                               - `whitespace-nowrap` taaki toote nahi.
+                            -->
+                            <div class="mt-1 flex flex-wrap gap-2">
+                                <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 w-fit max-w-full">
+                                    <i class="fa-solid fa-barcode text-[10px] text-slate-400"></i>
+                                    <span class="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 break-all" 
+                                          x-text="pc.assetId ? pc.assetId : 'No ID'"></span>
+                                </div>
+                            </div>
+
+                            <!-- 
+                               OS NAME FIX:
+                               - `whitespace-nowrap`: Ek line mein rahega.
+                               - `text-[9px]`: Size thoda adjust kiya taaki fit aaye.
+                            -->
+                            <div class="flex items-center gap-1.5 mt-1 text-slate-400">
+                                <i :class="getOsIcon(pc.os)"></i>
+                                <span class="text-[9px] font-bold uppercase tracking-wide whitespace-nowrap" x-text="pc.os"></span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Right Side -->
+                    <!-- Right Side: Date/Arrow -->
                     <div class="text-right shrink-0 pl-2">
                         <template x-if="pc.status === 'DONE'">
                             <div class="flex flex-col items-end">
                                 <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">CLEAN</span>
-                                <p class="text-[9px] font-bold text-slate-400 mt-0.5" x-text="formatDateDisplay(pc.date)"></p>
+                                <p class="text-[9px] font-bold text-slate-400 mt-0.5 whitespace-nowrap" x-text="formatDateDisplay(pc.date)"></p>
                             </div>
                         </template>
                         <template x-if="pc.status !== 'DONE'">
@@ -297,7 +287,7 @@
         
         <div class="bg-white dark:bg-[#1e293b] w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-8 shadow-2xl relative" @click.away="showModal = false">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-black text-slate-800 dark:text-white" x-text="mode === 'add' ? 'Add Asset' : 'Edit Asset'"></h3>
+                <h3 class="text-2xl font-black text-slate-800 dark:text-white" x-text="mode === 'add' ? 'New Entry' : 'Edit Details'"></h3>
                 <button @click="showModal = false" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 flex items-center justify-center hover:text-brand_primary transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
@@ -311,7 +301,7 @@
                     </select>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[10px] font-bold text-brand_primary/70 uppercase tracking-widest mb-1.5 block">Status</label><select x-model="form.status" @change="handleStatusChange()" class="input-box appearance-none" :class="form.status === 'DONE' ? 'text-emerald-600 bg-emerald-50' : 'text-brand_primary bg-rose-50'"><option value="PENDING">Pending</option><option value="DONE">Cleaned</option></select></div>
+                    <div><label class="text-[10px] font-bold text-brand_primary/70 uppercase tracking-widest mb-1.5 block">Status</label><select x-model="form.status" @change="handleStatusChange()" class="input-box appearance-none" :class="form.status === 'DONE' ? 'text-emerald-600 bg-emerald-50' : 'text-brand_primary bg-teal-50'"><option value="PENDING">Pending</option><option value="DONE">Cleaned</option></select></div>
                     <div><label class="text-[10px] font-bold text-brand_primary/70 uppercase tracking-widest mb-1.5 block">Date</label><input type="date" x-model="form.date" class="input-box" :disabled="form.status !== 'DONE'"></div>
                 </div>
                 <div><label class="text-[10px] font-bold text-brand_primary/70 uppercase tracking-widest mb-1.5 block">Passkey</label><input type="password" x-model="form.secret" class="input-box border-dashed" placeholder="Required to Save"></div>
@@ -335,7 +325,7 @@
     <!-- Success Modal -->
     <div x-show="showReportModal" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center shadow-2xl relative overflow-hidden">
-            <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl animate-bounce">🎉</div>
+            <div class="w-16 h-16 bg-teal-100 dark:bg-brand_primary/30 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl animate-bounce">🎉</div>
             <h3 class="text-2xl font-black text-slate-800 dark:text-white">Complete!</h3>
             <p class="text-xs text-slate-500 mb-6">Cycle <span x-text="currentCycleName" class="font-bold text-brand_primary"></span> finished.</p>
             <button @click="sendEmailReport()" class="w-full py-4 bg-brand_primary text-white rounded-xl font-bold text-xs shadow-lg">Send Closure Report</button>
