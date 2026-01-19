@@ -2,28 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PBL CleanOps | Vacuum Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PBL VacuumOps | Teal Edition</title>
     
-    <!-- ✅ Favicon -->
+    <!-- ✅ Favicon (Logo) -->
     <link rel="icon" type="image/png" href="pbl-logo.png">
-     
-    <!-- Dependencies -->
+    
+    <!-- ==============================================
+         LIBRARIES (DEPENDENCIES)
+         Tailwind: Styling ke liye
+         FontAwesome: Icons ke liye
+         AlpineJS: Logic aur Interactivity ke liye
+    =============================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
-    <!-- Tailwind Config -->
+    <!-- Tailwind Configuration (Custom Colors) -->
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        dark_bg: '#0f172a',
-                        dark_surface: '#1e293b',
-                        brand: '#2563eb'
+                        // Aapka naya Teal Color (#008080)
+                        teal_primary: '#008080', 
+                        teal_dark: '#006666',
+                        dark_bg: '#0f172a'
+                    },
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        mono: ['JetBrains Mono', 'monospace'] 
+                    },
+                    animation: {
+                        'float': 'float 4s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards', // Smooth entry animation
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        slideUp: {
+                            'from': { opacity: 0, transform: 'translateY(20px)' },
+                            'to': { opacity: 1, transform: 'translateY(0)' }
+                        }
                     }
                 }
             }
@@ -31,602 +55,556 @@
     </script>
 
     <style>
-        /* ✅ FIX: Hides elements until Alpine Loads */
+        /* AlpineJS load hone se pehle content chipa rahe */
         [x-cloak] { display: none !important; }
-
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s ease; }
         
-        /* Header */
-        .glass-header { 
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); 
-            border-bottom: 1px solid rgba(0,0,0,0.05); border-radius: 0 0 32px 32px; 
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50;
-        }
-        .dark .glass-header { background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
-
-        /* Banner */
-        .schedule-banner {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd;
-            border-radius: 20px; padding: 16px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: inset 0 2px 4px rgba(255,255,255,0.5);
-        }
-        .dark .schedule-banner { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: none; }
-
-        /* Cards */
-        .pc-card { 
-            background: white; border-radius: 20px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-            border: 1px solid #f1f5f9; position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-        }
-        .dark .pc-card { background: #1e293b; border-color: #334155; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
-        .pc-card:active { transform: scale(0.98); }
+        body { background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         
-        .card-pending { border-left: 5px solid #f59e0b; }
-        .card-done { border-left: 5px solid #10b981; background: linear-gradient(to right, #f0fdf4, #ffffff); }
-        .dark .card-done { background: linear-gradient(to right, rgba(16, 185, 129, 0.1), #1e293b); }
-
-        /* FAB */
-        .fab {
-            position: fixed; bottom: 90px; right: 20px; width: 56px; height: 56px;
-            background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
-            transition: transform 0.2s; z-index: 40;
+        /* 🔥 TEAL GRADIENT (Updated Theme) */
+        .bg-gradient-teal { 
+            background: linear-gradient(135deg, #008080 0%, #004d4d 100%); 
         }
-        .fab:active { transform: scale(0.90); }
 
-        /* Form Elements */
+        /* Glass Card Effect (Transparent Blur) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 40px -10px rgba(0,128,128,0.15); /* Teal Shadow */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.90);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+        }
+        .glass-card:active { transform: scale(0.98); }
+
+        /* Custom Input Fields */
         .input-box {
-            width: 100%; padding: 16px; background: #f8fafc; border: 1px solid #cbd5e1;
-            border-radius: 16px; font-size: 0.95rem; color: #334155; outline: none; transition: 0.2s; font-weight: 600;
+            width: 100%; padding: 16px; background: #f1f5f9; border: 2px solid transparent;
+            border-radius: 16px; font-size: 0.95rem; color: #334155; outline: none; transition: 0.2s; font-weight: 700;
         }
-        .dark .input-box { background: #0f172a; border-color: #334155; color: white; }
-        .input-box:focus { background: white; border-color: #3b82f6; ring: 3px solid rgba(59, 130, 246, 0.15); }
-        .dark .input-box:focus { background: #1e293b; }
+        .dark .input-box { background: #0f172a; color: white; }
+        .input-box:focus { background: white; border-color: #008080; box-shadow: 0 4px 12px rgba(0,128,128,0.1); }
+        .dark .input-box:focus { background: #1e293b; border-color: #008080; }
 
-        /* Utilities */
-        .loader-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(4px); }
-        .dark .loader-overlay { background: rgba(15, 23, 42, 0.85); }
-        .progress-ring circle { transition: stroke-dashoffset 1s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .slide-in { animation: slideIn 0.3s ease-out forwards; }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px;
-            font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            z-index: 100; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; align-items: center; gap: 10px; opacity: 0; pointer-events: none;
-        }
-        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        /* Scrollbar Hide */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="bg-[#f8fafc] dark:bg-[#0b1120] text-slate-800 dark:text-slate-200 transition-colors duration-300" x-data="vacuumTracker()">
 
-    <!-- HEADER -->
-    <div class="glass-header p-6 pb-6">
-        <div class="flex justify-between items-center mb-1">
-            <!-- Logo & Title -->
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-lg shadow-blue-500/10 ring-1 ring-slate-900/5 dark:ring-white/10 overflow-hidden p-2 shrink-0">
-                    <img src="pbl-logo.png" alt="PBL Logo" class="w-full h-full object-contain">
-                </div>
-                <div>
-                    <h1 class="text-2xl font-black tracking-tight leading-none"><span class="text-blue-600">Clean</span><span class="text-slate-700 dark:text-white">Ops</span></h1>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mt-1">Vacuum Tracker</p>
-                </div>
+<!-- Body Start -->
+<body class="text-slate-800 transition-colors duration-300 min-h-screen pb-40 font-sans bg-slate-50 dark:bg-[#0b1120] dark:text-slate-200" x-data="vacuumTracker()">
+
+    <!-- ==============================================
+         HEADER SECTION (TEAL THEME)
+    =============================================== -->
+    <header class="relative pt-10 pb-28 px-6 overflow-hidden rounded-b-[3rem] shadow-2xl transition-colors duration-500 ease-out bg-gradient-teal">
+        
+        <!-- Background Decor (Circles & Icons) -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute bottom-0 right-0 w-full flex items-end justify-end text-white opacity-10 pr-6 pointer-events-none">
+                <i class="fa-solid fa-fan text-[9rem] translate-x-4 translate-y-4"></i>
             </div>
-            
-            <!-- Tools -->
-            <div class="flex items-center gap-3">
-                <button @click="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-yellow-400 transition hover:scale-110 active:scale-95">
+            <div class="absolute top-[-40px] left-[-40px] w-64 h-64 bg-white/10 rounded-full blur-3xl animate-float"></div>
+        </div>
+
+        <div class="relative z-10">
+            <!-- Top Navigation Bar -->
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-4">
+                    <!-- Logo Box -->
+                    <div class="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg border border-white/20 active:scale-95 transition-transform" @click="haptic()">
+                        <img src="pbl-logo.png" alt="Logo" class="w-8 h-8 object-contain">
+                    </div>
+                    
+                    <!-- Title & User Name -->
+                    <div>
+                        <h1 class="text-3xl font-black text-white leading-none tracking-tight">Vacuum<span class="opacity-80">Ops</span></h1>
+                        <div class="flex items-center gap-2 mt-1.5 opacity-90">
+                            <!-- Ashok Singh Badge -->
+                            <span class="text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded text-white font-bold border border-white/10 uppercase">
+                                <i class="fa-solid fa-user-shield mr-1"></i> Ashok Singh
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dark Mode Toggle Button -->
+                <button @click="toggleTheme()" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/10 active:scale-95 transition hover:bg-white/20">
                     <i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
                 </button>
-                <div class="relative w-12 h-12 shrink-0">
-                    <svg class="w-full h-full" viewBox="0 0 100 100">
-                        <circle class="text-slate-200 dark:text-slate-700 stroke-current" stroke-width="8" cx="50" cy="50" r="42" fill="transparent"></circle>
-                        <circle class="text-blue-600 dark:text-blue-500 progress-ring stroke-current" stroke-width="8" stroke-linecap="round" cx="50" cy="50" r="42" fill="transparent" :stroke-dasharray="263.8" :stroke-dashoffset="263.8 - (263.8 * percentage) / 100"></circle>
-                    </svg>
-                    <div class="absolute inset-0 flex items-center justify-center text-[10px] font-black text-slate-700 dark:text-white" x-text="percentage + '%'"></div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative group z-20">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-white/60 group-focus-within:text-white transition-colors"></i>
+                </div>
+                <input type="text" x-model="search" placeholder="Search System Name or Asset ID..." 
+                       class="block w-full pl-11 pr-4 py-4 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl text-sm font-bold text-white placeholder-white/50 focus:outline-none focus:bg-white/20 focus:ring-1 focus:ring-white/30 transition shadow-lg">
+            </div>
+        </div>
+    </header>
+
+    <!-- ==============================================
+         MAIN CONTENT AREA
+    =============================================== -->
+    <main class="px-5 -mt-20 relative z-20 max-w-lg mx-auto space-y-5">
+
+        <!-- 1. HUD SCORE CARD (Circular Progress) -->
+        <div class="glass-card p-6 rounded-[2.5rem] flex justify-between items-center shadow-xl active:scale-98 transition-transform cursor-pointer" @click="haptic()">
+            <div class="flex-1">
+                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Cycle Completion</p>
+                <div class="flex items-baseline gap-1">
+                    <h2 class="text-6xl font-black text-slate-800 dark:text-white tracking-tighter" x-text="percentage">0</h2>
+                    <span class="text-2xl font-bold text-slate-400">%</span>
+                </div>
+            </div>
+            <!-- Circle Chart SVG -->
+            <div class="relative w-20 h-20">
+                <svg class="w-full h-full transform -rotate-90 drop-shadow-lg">
+                    <circle cx="40" cy="40" r="36" stroke="#e2e8f0" stroke-width="6" fill="transparent" class="dark:stroke-slate-700"/>
+                    <circle cx="40" cy="40" r="36" stroke="currentColor" stroke-width="6" fill="transparent" 
+                            :class="percentage == 100 ? 'text-teal_primary' : 'text-slate-400'"
+                            :stroke-dasharray="226" :stroke-dashoffset="226 - (226 * percentage) / 100" class="transition-all duration-1000 ease-out" stroke-linecap="round"/>
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center text-2xl text-slate-300 dark:text-slate-600">
+                    <i class="fa-solid" :class="percentage == 100 ? 'fa-check text-teal_primary' : 'fa-chart-pie'"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Schedule Banner -->
-        <div class="schedule-banner">
-            <div class="flex items-center gap-3.5">
-                <div class="w-10 h-10 rounded-full bg-white dark:bg-white/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-white/10 shadow-sm">
-                    <i class="fa-solid fa-arrows-rotate text-sm"></i>
+        <!-- 2. FILTER TABS (Done / Pending) -->
+        <div class="grid grid-cols-2 gap-3">
+            <button @click="toggleFilter('DONE')" 
+                    class="glass-card p-4 rounded-3xl flex items-center gap-3 active:scale-95 transition-all"
+                    :class="filterStatus === 'DONE' ? 'ring-2 ring-teal_primary bg-teal-50 dark:bg-teal_primary/20' : ''">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center bg-teal-100 text-teal_primary dark:bg-teal_primary dark:text-white">
+                    <i class="fa-solid fa-check"></i>
                 </div>
-                <div>
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wide opacity-80">Cycle</p>
-                    <p class="text-xs font-black text-slate-800 dark:text-white mt-0.5">JAN • MAY • SEPT</p>
+                <div class="text-left">
+                    <p class="text-[10px] uppercase font-bold text-slate-400">Done</p>
+                    <p class="text-xl font-black text-slate-800 dark:text-white" x-text="doneCount">0</p>
                 </div>
-            </div>
-            <div class="h-8 w-px bg-indigo-200/50 dark:bg-white/10 mx-1"></div>
-            <div class="text-right">
-                <p class="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-bold flex items-center justify-end gap-1">Next Due <i class="fa-solid fa-arrow-right text-[8px]"></i></p>
-                <p class="text-sm font-black text-slate-800 dark:text-white mt-0.5">MAY 2026</p>
-            </div>
-        </div>
-		
-		<!-- Search -->
-        <!-- AFTER (Tight & Space Optimized) -->
-		<div class="relative mt-3"> <!-- ✅ Changed mt-6 to mt-3 -->
-			<i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-			<input type="text" x-model="search" placeholder="Search Asset ID..." 
-				   class="w-full pl-11 pr-4 py-3 bg-white dark:bg-black/20 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-medium text-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition shadow-sm">
-		</div>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="px-4 mt-6 pb-32 relative z-10 space-y-5">
-        
-        <!-- Filter Pills -->
-        <div class="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
-            <div @click="toggleFilter('DONE')" 
-                 class="cursor-pointer px-5 py-2.5 rounded-full shadow-sm border flex items-center gap-2 whitespace-nowrap transition-all"
-                 :class="filterStatus === 'DONE' ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 ring-1 ring-emerald-500' : 'bg-white dark:bg-dark_surface border-slate-200 dark:border-slate-700 hover:border-emerald-300'">
-                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-200"></div>
-                <span class="text-xs font-bold text-slate-700 dark:text-white"><span x-text="doneCount" class="text-emerald-600 dark:text-emerald-400 text-sm">0</span> Completed</span>
-            </div>
-
-            <div @click="toggleFilter('PENDING')"
-                 class="cursor-pointer px-5 py-2.5 rounded-full shadow-sm border flex items-center gap-2 whitespace-nowrap transition-all"
-                 :class="filterStatus === 'PENDING' ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-500 ring-1 ring-amber-500' : 'bg-white dark:bg-dark_surface border-slate-200 dark:border-slate-700 hover:border-amber-300'">
-                <div class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-200"></div>
-                <span class="text-xs font-bold text-slate-700 dark:text-white"><span x-text="pendingCount" class="text-amber-600 dark:text-amber-400 text-sm">0</span> Pending</span>
-            </div>
+            </button>
+            <button @click="toggleFilter('PENDING')" 
+                    class="glass-card p-4 rounded-3xl flex items-center gap-3 active:scale-95 transition-all"
+                    :class="filterStatus === 'PENDING' ? 'ring-2 ring-amber-500 bg-amber-50 dark:bg-amber-900/20' : ''">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center bg-amber-100 text-amber-600 dark:bg-amber-500 dark:text-white">
+                    <i class="fa-regular fa-clock"></i>
+                </div>
+                <div class="text-left">
+                    <p class="text-[10px] uppercase font-bold text-slate-400">Pending</p>
+                    <p class="text-xl font-black text-slate-800 dark:text-white" x-text="pendingCount">0</p>
+                </div>
+            </button>
         </div>
 
-        <!-- Loader -->
+        <!-- 3. LOADING INDICATOR (Teal Color) -->
         <div x-show="loading" class="py-12 text-center">
-            <div class="w-12 h-12 border-4 border-blue-100 dark:border-slate-700 border-t-blue-600 rounded-full animate-spin mx-auto mb-3"></div>
-            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider animate-pulse">Initializing Database...</p>
+            <div class="w-12 h-12 border-4 border-slate-200 border-t-teal_primary rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Syncing Database...</p>
         </div>
 
-        <!-- LIST -->
-        <div class="space-y-3">
-            <template x-for="(pc, index) in filteredList" :key="pc.id">
-                <div class="pc-card p-5 flex justify-between items-center slide-in"
+        <!-- 4. ASSET LIST (Cards) -->
+        <div class="space-y-3 pb-20">
+            <template x-for="(pc, index) in filteredList" :key="pc.systemName + index">
+                <div class="glass-card p-5 rounded-[1.5rem] relative overflow-hidden group animate-slide-up"
                      :style="`animation-delay: ${index * 50}ms`"
-                     :class="pc.status === 'DONE' ? 'card-done' : 'card-pending'"
+                     :class="pc.status === 'DONE' ? 'border-l-[6px] border-l-teal_primary' : 'border-l-[6px] border-l-amber-500'"
                      @click="openModal('edit', pc)">
                     
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-md border transition-transform group-hover:scale-110 shrink-0"
-                             :class="pc.status === 'DONE' ? 'bg-white dark:bg-dark_bg text-emerald-600 border-emerald-100 dark:border-emerald-900/50' : 'bg-amber-50 dark:bg-amber-900/20 text-amber-500 border-amber-100 dark:border-amber-900/50'">
-                            <i class="fa-solid" :class="pc.status === 'DONE' ? 'fa-check-double' : 'fa-broom'"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <h3 class="font-bold text-base text-slate-800 dark:text-white tracking-tight truncate" x-text="pc.id"></h3>
-                            <div class="flex items-center gap-2 mt-1">
-                                <!-- AFTER (Smart Icon based on OS Name) -->
-							<span class="bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide flex items-center gap-1">
-								<!-- 👇 Dynamic Class Binding Here -->
-								<i :class="getOsIcon(pc.os)"></i> <span x-text="pc.os"></span>
-							</span>
+                    <div class="flex justify-between items-start relative z-10">
+                        <div class="flex gap-4">
+                            <!-- Icon Box -->
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-lg transition-colors"
+                                 :class="pc.status === 'DONE' ? 'bg-teal-100 text-teal_primary dark:bg-teal_primary dark:text-white' : 'bg-amber-100 text-amber-600 dark:bg-amber-500 dark:text-white'">
+                                <i class="fa-solid" :class="pc.status === 'DONE' ? 'fa-check' : 'fa-broom'"></i>
                             </div>
+
+                            <div>
+                                <!-- System Name -->
+                                <h3 class="font-black text-lg text-slate-800 dark:text-white leading-tight" x-text="pc.systemName"></h3>
+                                
+                                <!-- Asset ID Badge (With Barcode Icon) -->
+                                <div class="mt-1.5 inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                    <i class="fa-solid fa-barcode text-[10px] text-slate-400 mr-1.5"></i>
+                                    <span class="text-[11px] font-mono font-bold text-slate-600 dark:text-slate-300 tracking-wide" x-text="pc.assetId ? pc.assetId : 'No ID'"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Date/Status -->
+                        <div class="text-right">
+                            <template x-if="pc.status === 'DONE'">
+                                <div>
+                                    <span class="text-[9px] font-black text-teal_primary dark:text-teal-300 uppercase bg-teal-50 dark:bg-teal_primary/30 px-2 py-0.5 rounded">CLEAN</span>
+                                    <p class="text-[10px] font-bold text-slate-400 mt-1" x-text="formatDateDisplay(pc.date)"></p>
+                                </div>
+                            </template>
                         </div>
                     </div>
 
-                    <div class="text-right shrink-0">
-                        <template x-if="pc.status === 'DONE'">
-                            <div class="flex flex-col items-end">
-                                <span class="text-[9px] font-black text-emerald-700 dark:text-emerald-400 uppercase bg-emerald-100/80 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800 px-2 py-1 rounded-lg mb-1">Cleaned</span>
-                                <p class="text-[11px] text-slate-600 dark:text-slate-400 font-mono font-bold flex items-center gap-1">
-                                    <i class="fa-regular fa-calendar-check text-emerald-500"></i> <span x-text="formatDateDisplay(pc.date)"></span>
-                                </p>
-                            </div>
-                        </template>
-                        <template x-if="pc.status !== 'DONE'">
-                            <div class="flex flex-col items-end">
-                                <span class="text-[9px] font-black text-amber-700 dark:text-amber-400 uppercase bg-amber-100/80 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-800 px-2 py-1 rounded-lg mb-1">Due Now</span>
-                                <p class="text-[10px] text-slate-400 font-medium">Tap to Mark Done</p>
-                            </div>
-                        </template>
+                    <!-- Footer: OS & Action -->
+                    <div class="flex justify-between items-center mt-4 pt-3 border-t border-slate-100 dark:border-white/5">
+                        <div class="flex items-center gap-2 text-slate-400">
+                            <i :class="getOsIcon(pc.os)"></i>
+                            <span class="text-[10px] font-bold uppercase tracking-wide" x-text="pc.os"></span>
+                        </div>
+                        <div class="text-[11px] font-bold text-teal_primary flex items-center gap-1 group-active:translate-x-1 transition-transform">
+                            Edit <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                        </div>
                     </div>
 
-                    <div x-show="pc.updating" class="loader-overlay rounded-xl">
-                        <i class="fa-solid fa-circle-notch fa-spin text-blue-600 text-2xl"></i>
-                        <p class="text-[10px] font-bold text-slate-500 mt-2 uppercase">Saving...</p>
+                    <!-- Updating Overlay -->
+                    <div x-show="pc.updating" class="absolute inset-0 bg-white/80 dark:bg-black/60 backdrop-blur-sm z-20 flex items-center justify-center">
+                        <i class="fa-solid fa-circle-notch fa-spin text-teal_primary text-2xl"></i>
                     </div>
                 </div>
             </template>
-            
+
             <!-- Empty State -->
-            <div x-show="filteredList.length === 0 && !loading" class="text-center py-12 opacity-60">
-                <i class="fa-solid fa-filter text-4xl text-slate-300 dark:text-slate-600 mb-3"></i>
-                <p class="text-sm font-bold text-slate-500 dark:text-slate-400">No records found matching filter.</p>
-                <button @click="filterStatus = 'ALL'; search = ''" x-show="filterStatus !== 'ALL' || search" class="mt-3 text-xs font-bold text-blue-600 hover:underline">Clear Filters</button>
+            <div x-show="filteredList.length === 0 && !loading" class="text-center py-12 opacity-50">
+                <i class="fa-solid fa-box-open text-4xl text-slate-300 mb-2"></i>
+                <p class="text-sm font-bold text-slate-400">No assets found</p>
+                <button @click="filterStatus = 'ALL'; search = ''" x-show="filterStatus !== 'ALL' || search" class="mt-4 text-xs font-bold text-teal_primary underline">Reset Filters</button>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Floating Add Button -->
-    <button @click="openModal('add')" class="fab hover:scale-110 active:scale-95 transition-all shadow-xl shadow-blue-600/30">
+    <!-- FLOATING ACTION BUTTON (TEAL) -->
+    <button @click="openModal('add')" class="fixed bottom-24 right-5 w-14 h-14 bg-gradient-to-br from-teal_primary to-teal_dark rounded-full text-white shadow-2xl shadow-teal_primary/40 flex items-center justify-center active:scale-90 transition-transform z-40">
         <i class="fa-solid fa-plus text-xl"></i>
     </button>
 
-    <!-- FOOTER -->
-    <footer class="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-dark_surface/95 backdrop-blur-md border-t border-slate-200 dark:border-white/10 p-3 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
-        <div class="max-w-md mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/5 shadow-sm">
-                    <i class="fa-solid fa-user-shield text-sm"></i>
-                </div>
-                <div>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Executed By</p>
-                    <p class="text-sm font-bold text-slate-800 dark:text-white">Ashok Singh <span class="text-blue-600 dark:text-blue-400 font-black text-[10px] px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 rounded ml-1">IT</span></p>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-2">
-                <!-- Sync Button -->
-                <button @click="fetchData(true)" class="w-11 h-11 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/10 text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 transition active:scale-95 border border-slate-100 dark:border-white/5">
-                    <i class="fa-solid fa-rotate" :class="{'fa-spin': isSyncing}"></i>
-                </button>
-                
-                <!-- Manual Report Button -->
-                <button @click="openConfirmModal()" class="w-11 h-11 flex items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 transition active:scale-95 border border-indigo-100 dark:border-indigo-500/30 shadow-sm" :disabled="emailSending">
-                    <i class="fa-regular" :class="emailSending ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i>
-                </button>
-            </div>
+    <!-- ==============================================
+         FOOTER SECTION
+    =============================================== -->
+    <footer class="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-[#0f172a]/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/5 p-4 z-50 flex justify-between items-center pb-6">
+        <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Logged in as</p>
+            <p class="text-sm font-black text-slate-800 dark:text-white">Ashok Singh <span class="text-[9px] bg-teal-100 text-teal_primary px-1.5 py-0.5 rounded ml-1">IT</span></p>
+        </div>
+        <div class="flex gap-2">
+            <button @click="fetchData(true)" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 active:scale-95 transition">
+                <i class="fa-solid fa-rotate" :class="{'fa-spin': isSyncing}"></i>
+            </button>
+            <button @click="openConfirmModal()" class="px-4 h-10 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs flex items-center gap-2 shadow-lg active:scale-95 transition" :disabled="emailSending">
+                <i class="fa-regular fa-paper-plane"></i> Report
+            </button>
         </div>
     </footer>
 
-    <!-- MODALS -->
+    <!-- ==============================================
+         MODALS
+    =============================================== -->
 
-    <!-- 1. Success Modal (Auto on 100%) -->
-    <div x-show="showReportModal" x-cloak 
-         class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 scale-90"
-         x-transition:enter-end="opacity-100 scale-100">
-        
-        <div class="bg-white dark:bg-dark_surface w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden relative text-center p-8">
-            <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner animate-bounce">
-                🎉
-            </div>
-            <h3 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Cycle Complete!</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">All systems for <span class="font-bold text-blue-600 dark:text-blue-400">JAN 2026</span> are cleaned.</p>
-            
-            <div class="bg-slate-50 dark:bg-white/5 rounded-xl p-4 mb-6 border border-slate-100 dark:border-white/10">
-                <div class="flex justify-between text-xs mb-2">
-                    <span class="text-slate-500 font-bold uppercase">Total Systems</span>
-                    <span class="text-slate-800 dark:text-white font-black" x-text="pcs.length"></span>
-                </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-500 font-bold uppercase">Status</span>
-                    <span class="text-emerald-500 font-black">100% DONE</span>
-                </div>
-            </div>
-
-            <button @click="sendEmailReport()" 
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/30 transition active:scale-95 flex items-center justify-center gap-2"
-                    :disabled="emailSending">
-                <i class="fa-solid" :class="emailSending ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i>
-                <span x-text="emailSending ? 'Sending to Vikas Sir...' : 'Send Final Report'"></span>
-            </button>
-            <button @click="showReportModal = false" class="mt-4 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">Close</button>
-        </div>
-    </div>
-    
-    <!-- 2. Confirmation Modal (Manual Send) -->
-    <div x-show="showConfirmModal" x-cloak 
-         class="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0 scale-95"
-         x-transition:enter-end="opacity-100 scale-100">
-        
-        <div class="bg-white dark:bg-dark_surface w-full max-w-sm rounded-3xl shadow-2xl p-6 text-center" @click.away="showConfirmModal = false">
-            <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl text-blue-600 dark:text-blue-400">
-                <i class="fa-solid fa-paper-plane"></i>
-            </div>
-            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Send Status Report?</h3>
-            <!-- AFTER (Dynamic Text - Checks if Done or Pending) -->
-			<p class="text-sm text-slate-500 dark:text-slate-400 mb-6 px-2 leading-relaxed">
-				This will send a 
-				<span class="font-bold text-slate-700 dark:text-slate-300" 
-					  x-text="pendingCount === 0 ? 'Final Closure Report' : 'Daily Progress Update'">
-				</span> 
-				to the IT Head with current details.
-			</p>
-            <div class="flex gap-3">
-                <button @click="showConfirmModal = false" class="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-slate-200 transition">Cancel</button>
-                <button @click="sendEmailReport(); showConfirmModal = false" class="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition">Send Now</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. Add/Edit Modal -->
+    <!-- Add/Edit Modal -->
     <div x-show="showModal" x-cloak 
-         class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-md p-0 sm:p-4"
+         class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-md p-0 sm:p-4"
          x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 translate-y-full sm:translate-y-10 sm:scale-95"
-         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100">
+         x-transition:enter-start="opacity-0 translate-y-full"
+         x-transition:enter-end="opacity-100 translate-y-0">
         
-        <div class="bg-white dark:bg-dark_surface w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden relative" @click.away="showModal = false">
-            <div class="h-1.5 w-12 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-3 mb-1 sm:hidden"></div>
+        <div class="bg-white dark:bg-[#1e293b] w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-8 shadow-2xl relative" @click.away="showModal = false">
+            <div class="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full sm:hidden"></div>
             
-            <div class="px-8 py-6 border-b border-slate-100 dark:border-white/10">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h3 class="font-black text-2xl text-slate-800 dark:text-white" x-text="mode === 'add' ? 'New System' : 'Update Status'"></h3>
-                        <p class="text-xs text-slate-500 font-medium mt-1">Manage vacuum cleaning record</p>
-                    </div>
-                    <button @click="showModal = false" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
-                </div>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-black text-slate-800 dark:text-white" x-text="mode === 'add' ? 'Add Asset' : 'Edit Asset'"></h3>
+                <button @click="showModal = false" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 flex items-center justify-center hover:bg-rose-100 hover:text-rose-500 transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="p-8 space-y-5">
+            <div class="space-y-4">
+                <!-- System Name Input -->
                 <div>
-                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Asset ID</label>
-                    <input type="text" x-model="form.assetId" class="input-box font-mono font-bold uppercase text-lg text-slate-800 dark:text-white tracking-wide" :readonly="mode === 'edit'" placeholder="PBLNET...">
-                </div>
-                <div>
-                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Operating System</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">System Name</label>
                     <div class="relative">
-                        <!-- AFTER (Sheet Data Matched + Emojis) -->
-						<select x-model="form.os" class="input-box cursor-pointer appearance-none font-bold text-slate-700 dark:text-white">
-							<option value="Windows 11 Pro">🪟 Windows 11 Pro</option>
-							<option value="Windows XP">💾 Windows XP</option>
-							<option value="Windows Server 2019">⚙️ Windows Server 2019</option>
-							<option value="Windows Server 2003">📼 Windows Server 2003</option>
-							<option value="OpenSuse">🦎 OpenSuse</option>
-							<option value="Windows 10">💻 Windows 10</option>
-						</select>
-                        <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                        <i class="fa-solid fa-desktop absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" x-model="form.systemName" class="input-box pl-10 uppercase" placeholder="PBLNET001">
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-5">
+
+                <!-- Asset ID Input -->
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Asset Tag / ID</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-barcode absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" x-model="form.assetId" class="input-box pl-10 font-mono text-sm" placeholder="e.g. PBL-NOD-IT-CPU-001">
+                    </div>
+                </div>
+
+                <!-- OS Select -->
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Operating System</label>
+                    <div class="relative">
+                        <select x-model="form.os" class="input-box appearance-none">
+                            <option value="Windows 11 Pro">Windows 11 Pro</option>
+                            <option value="Windows 10">Windows 10</option>
+                            <option value="Windows XP">Windows XP</option>
+                            <option value="Windows Server 2019">Windows Server 2019</option>
+                            <option value="Windows Server 2003">Windows Server 2003</option>
+                            <option value="OpenSuse">OpenSuse Linux</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Status & Date Inputs -->
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Status</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Current Status</label>
                         <div class="relative">
-                            <select x-model="form.status" @change="handleStatusChange()" class="input-box font-bold appearance-none"
-                                    :class="form.status === 'DONE' ? 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20' : 'text-amber-600 bg-amber-50 border-amber-200 dark:bg-amber-900/20'">
+                            <select x-model="form.status" @change="handleStatusChange()" class="input-box appearance-none"
+                                    :class="form.status === 'DONE' ? 'text-teal_primary bg-teal-50' : 'text-amber-600 bg-amber-50'">
                                 <option value="PENDING">Pending</option>
-                                <option value="DONE">Done</option>
+                                <option value="DONE">Cleaned</option>
                             </select>
-                            <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                         </div>
                     </div>
                     <div>
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Date</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Cleaning Date</label>
                         <input type="date" x-model="form.date" class="input-box" :disabled="form.status !== 'DONE'">
                     </div>
                 </div>
+
+                <!-- Admin Key Input -->
                 <div class="pt-2">
-                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5 block">Admin Key 🔐</label>
-                    <input type="password" x-model="form.secret" placeholder="Enter PBL2026" class="input-box border-dashed border-2 focus:border-solid focus:border-blue-500">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Admin Passkey</label>
+                    <input type="password" x-model="form.secret" placeholder="Enter Key..." class="input-box border-2 border-dashed focus:border-solid">
                 </div>
-                <div class="flex gap-3 mt-6 pt-4 border-t border-slate-50 dark:border-white/10">
-                    <button x-show="mode === 'edit'" @click="performAction('delete')" class="px-5 bg-red-50 dark:bg-red-900/20 text-red-500 font-bold py-3.5 rounded-xl hover:bg-red-100 transition border border-red-100 dark:border-red-900/30"><i class="fa-solid fa-trash"></i></button>
-                    <button @click="performAction('save')" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition active:scale-95 transform flex items-center justify-center gap-2">
-                        <span x-text="submitting ? 'Saving...' : 'Save Record'"></span> <i x-show="!submitting" class="fa-solid fa-check"></i>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3 pt-4 mt-2">
+                    <button x-show="mode === 'edit'" @click="performAction('delete')" class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-xl hover:bg-rose-100 transition"><i class="fa-solid fa-trash"></i></button>
+                    <button @click="performAction('save')" class="flex-1 h-14 rounded-2xl bg-slate-900 dark:bg-teal_primary text-white font-bold text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition">
+                        <span x-text="submitting ? 'Saving...' : 'Save Changes'"></span>
+                        <i x-show="!submitting" class="fa-solid fa-check"></i>
                     </button>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
-        <span id="toast-msg">Operation Successful</span>
+    <!-- Confirm Modal -->
+    <div x-show="showConfirmModal" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center bg-black/70 backdrop-blur-md p-6">
+        <div class="bg-white dark:bg-[#1e293b] w-full max-w-xs rounded-[2rem] p-8 text-center shadow-2xl">
+            <div class="w-16 h-16 bg-teal-50 dark:bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 text-teal_primary dark:text-teal-400 text-2xl"><i class="fa-solid fa-paper-plane"></i></div>
+            <h3 class="text-xl font-black text-slate-800 dark:text-white mb-2">Send Report?</h3>
+            <p class="text-xs text-slate-500 mb-6">Send status summary to IT Head.</p>
+            <div class="flex gap-3">
+                <button @click="showConfirmModal = false" class="flex-1 py-3 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs">Cancel</button>
+                <button @click="sendEmailReport(); showConfirmModal = false" class="flex-1 py-3 bg-teal_primary text-white rounded-xl font-bold text-xs shadow-lg">Confirm</button>
+            </div>
+        </div>
     </div>
 
-    <!-- SCRIPT (FIXED) -->
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwTdfxWoSDqXnG1IWxck9QJhBmzxOf7DCFDDD9eqgpbFZeQ_lfFMudILRcJKSML4IyQOQ/exec";  
+    <!-- Success Modal -->
+    <div x-show="showReportModal" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
+        <div class="bg-white dark:bg-[#1e293b] w-full max-w-sm rounded-[2rem] p-8 text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-400 to-emerald-500"></div>
+            <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl animate-bounce">🎉</div>
+            <h3 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Cycle Complete!</h3>
+            <p class="text-sm text-slate-500 mb-6">All systems are clean. Good job, Ashok!</p>
+            <button @click="sendEmailReport()" class="w-full py-4 bg-teal_primary text-white rounded-xl font-bold text-sm shadow-teal_primary/30 shadow-lg">Send Closure Report</button>
+            <button @click="showReportModal = false" class="mt-4 text-xs font-bold text-slate-400">Dismiss</button>
+        </div>
+    </div>
 
-        // Toast Helper
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-[120] transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-10">
+        <i class="fa-solid fa-check-circle text-teal-400"></i>
+        <span id="toast-msg" class="text-xs font-bold">Success</span>
+    </div>
+
+    <!-- ==============================================
+         JAVASCRIPT LOGIC (ALPINE.JS)
+    =============================================== -->
+    <script>
+        // ✅ YOUR NEW API URL
+        const API_URL = "https://script.google.com/macros/s/AKfycbzcC-725iqJopRom9r_vGd5bZ2WKxTS0ZKDTWkflUZXluqzPWSkok1PPzyosA7QJ7G4Og/exec";  
+
+        // Toast Helper: Message dikhane ke liye
         function showToast(msg, isError = false) {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toast-msg');
             toastMsg.innerText = msg;
-            toast.querySelector('i').className = isError 
-                ? 'fa-solid fa-circle-exclamation text-rose-400 text-lg' 
-                : 'fa-solid fa-circle-check text-emerald-400 text-lg';
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            toast.querySelector('i').className = isError ? 'fa-solid fa-circle-exclamation text-rose-400' : 'fa-solid fa-check-circle text-teal-400';
+            toast.classList.remove('opacity-0', '-translate-y-10');
+            setTimeout(() => toast.classList.add('opacity-0', '-translate-y-10'), 3000);
         }
 
+        // Haptic Feedback: Phone vibration ke liye
+        function vibrateDevice(pattern = [50]) {
+            if ("vibrate" in navigator) navigator.vibrate(pattern);
+        }
+
+        // Main Logic
         document.addEventListener('alpine:init', () => {
             Alpine.data('vacuumTracker', () => ({
-                pcs: [],
-                search: '',
-                loading: false,
-                isSyncing: false,
-                submitting: false,
-                showModal: false,
-                showReportModal: false,
-                showConfirmModal: false, 
-                emailSending: false,
-                isDark: false,
-                mode: 'add',
-                filterStatus: 'ALL',
-                form: { assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' },
+                pcs: [], search: '', loading: false, isSyncing: false, submitting: false, showModal: false, showReportModal: false, showConfirmModal: false, emailSending: false, isDark: false, mode: 'add', filterStatus: 'ALL',
+                form: { systemName: '', assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' },
 
+                // App Initialize hone par yeh chalta hai
                 init() { 
-                    this.showReportModal = false; // Force Hide on Load
-                    this.showConfirmModal = false;
-
-                    if(localStorage.getItem('theme') === 'dark') {
-                        this.isDark = true;
-                        document.documentElement.classList.add('dark');
-                    }
-
-                    const cachedData = localStorage.getItem('vacuum_data');
-                    if (cachedData) {
-                        try { this.pcs = JSON.parse(cachedData); this.loading = false; } 
-                        catch (e) { this.loading = true; }
-                    } else { this.loading = true; }
-                    
+                    if(localStorage.getItem('theme') === 'dark') { this.isDark = true; document.documentElement.classList.add('dark'); }
+                    const cached = localStorage.getItem('vacuum_data');
+                    if (cached) { try { this.pcs = JSON.parse(cached); this.loading = false; } catch (e) { this.loading = true; } } else { this.loading = true; }
                     this.fetchData(false); 
                 },
 
+                // Vibration helper
+                haptic() { vibrateDevice(15); },
+
+                // Dark/Light Mode toggle
                 toggleTheme() {
+                    this.haptic();
                     this.isDark = !this.isDark;
                     if(this.isDark) { document.documentElement.classList.add('dark'); localStorage.setItem('theme', 'dark'); } 
                     else { document.documentElement.classList.remove('dark'); localStorage.setItem('theme', 'light'); }
                 },
 
+                // Filters change karna
                 toggleFilter(status) {
+                    this.haptic();
                     this.filterStatus = (this.filterStatus === status) ? 'ALL' : status;
                 },
 
+                // Data fetch karna Google Script se
                 async fetchData(forceRefresh = false) {
-                    if (forceRefresh) this.isSyncing = true;
+                    if (forceRefresh) { this.isSyncing = true; this.haptic(); }
                     try {
                         const res = await fetch(API_URL + '?action=getVacuumData');
                         const data = await res.json();
+                        // Col E (Asset ID) Mapping Logic
                         const processedData = data.pcs.map(p => {
                             const isDone = (p.status && String(p.status).trim().toUpperCase() === 'DONE');
-                            return { id: p.id, os: p.os, status: isDone ? 'DONE' : 'PENDING', date: isDone ? p.date : '', updating: false };
+                            return { 
+                                systemName: p.id,        
+                                assetId: p.assetId || '', // Yeh Col E se aa raha hai
+                                os: p.os, 
+                                status: isDone ? 'DONE' : 'PENDING', 
+                                date: isDone ? p.date : '', 
+                                updating: false 
+                            };
                         });
                         this.pcs = processedData;
                         localStorage.setItem('vacuum_data', JSON.stringify(this.pcs));
-                        if(forceRefresh) showToast("Data Synced Successfully");
+                        if(forceRefresh) showToast("Synced Successfully");
                     } catch (e) { if (forceRefresh) showToast("Sync Failed", true); } 
                     finally { this.loading = false; this.isSyncing = false; }
                 },
 
+                // Date ko "3 Jan 2026" format mein dikhana
                 formatDateDisplay(dateStr) {
                     if (!dateStr || dateStr === "N/A") return '';
-                    const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
-                    if (/[a-zA-Z]/.test(dateStr)) {
-                        const parts = dateStr.split(/[-/ ]/);
-                        if (parts.length === 3) {
-                            let day = parseInt(parts[0]);
-                            let monthStr = parts[1].toLowerCase().substring(0, 3);
-                            let year = parseInt(parts[2]);
-                            if (year < 100) year += 2000;
-                            if (!isNaN(day) && months.hasOwnProperty(monthStr)) {
-                                let d = new Date(year, months[monthStr], day);
-                                return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                            }
-                        }
-                    }
-                    let dateObj = new Date(dateStr);
-                    if (!isNaN(dateObj.getTime())) return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                    let d = new Date(dateStr);
+                    if (!isNaN(d.getTime())) return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                     return dateStr;
                 },
 
+                // Date ko input box ke liye format karna
                 convertDateForInput(dateStr) {
                     if (!dateStr || dateStr === "N/A") return '';
-                    const parts = String(dateStr).split(/[-/]/);
-                    if(parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`; 
                     let d = new Date(dateStr);
                     if(!isNaN(d.getTime())) return d.toISOString().split('T')[0];
                     return ''; 
                 },
 				
-				// ✅ NEW: OS Icon Logic 🐧🪟⚙️
-					getOsIcon(osName) {
-						if (!osName) return 'fa-solid fa-desktop'; // Default
-						const os = osName.toLowerCase();
+                // OS ke icon decide karna
+				getOsIcon(osName) {
+					if (!osName) return 'fa-solid fa-desktop';
+					const os = osName.toLowerCase();
+					if (os.includes('server')) return 'fa-solid fa-server';
+					if (os.includes('opensuse') || os.includes('linux')) return 'fa-brands fa-linux';
+					if (os.includes('windows')) return 'fa-brands fa-windows';
+					return 'fa-solid fa-desktop';
+				},
 
-						if (os.includes('server')) return 'fa-solid fa-server'; // Server ⚙️
-						if (os.includes('opensuse') || os.includes('linux')) return 'fa-brands fa-linux'; // Linux 🐧
-						if (os.includes('windows')) return 'fa-brands fa-windows'; // Windows 🪟
-						
-						return 'fa-solid fa-desktop'; // Fallback
-					},
-
+                // Add/Edit Modal open karna
                 openModal(mode, item = null) {
+                    this.haptic();
                     this.mode = mode; this.form.secret = ''; 
                     if (mode === 'edit' && item) {
-                        this.form.assetId = item.id; this.form.os = item.os; this.form.status = item.status;
+                        this.form.systemName = item.systemName;
+                        this.form.assetId = item.assetId; 
+                        this.form.os = item.os; 
+                        this.form.status = item.status;
                         this.form.date = this.convertDateForInput(item.date); 
                     } else {
-                        this.form = { assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' };
+                        this.form = { systemName: '', assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' };
                     }
                     this.showModal = true;
                 },
 
-                openConfirmModal() {
-                    this.showConfirmModal = true;
-                },
+                openConfirmModal() { this.haptic(); this.showConfirmModal = true; },
 
+                // Agar status Done hai to aaj ki date auto-fill karna
                 handleStatusChange() {
                     if (this.form.status === 'DONE') {
                         const today = new Date();
-                        const year = today.getFullYear();
-                        const month = String(today.getMonth() + 1).padStart(2, '0');
-                        const day = String(today.getDate()).padStart(2, '0');
-                        this.form.date = `${year}-${month}-${day}`;
+                        this.form.date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                     } else { this.form.date = ''; }
                 },
 
+                // Email Report bhejna
                 async sendEmailReport() {
-                    this.emailSending = true;
-                    showToast("Sending Email Report...");
-                    
+                    this.emailSending = true; this.haptic(); showToast("Sending Report...");
                     const date = new Date();
                     const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                    const cycleName = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-
-                    const payload = {
-                        action: 'sendReport',
-                        cycle: cycleName,
-                        totalCount: this.pcs.length,
-                        doneCount: this.doneCount,
-                        pendingCount: this.pendingCount
-                    };
-
+                    const payload = { action: 'sendReport', cycle: `${monthNames[date.getMonth()]} ${date.getFullYear()}`, totalCount: this.pcs.length, doneCount: this.doneCount, pendingCount: this.pendingCount };
                     try {
                         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                         const result = await res.json();
-                        if(result.status === 'success') {
-                            showToast("Email Sent Successfully!");
-                            this.showReportModal = false;
-                        } else { showToast("Error Sending Email", true); }
+                        if(result.status === 'success') { vibrateDevice([100, 50, 100]); showToast("Email Sent!"); this.showReportModal = false; } else { showToast("Error", true); }
                     } catch(e) { showToast("Network Error", true); } 
                     finally { this.emailSending = false; }
                 },
 
+                // Save ya Delete Action perform karna
                 async performAction(type) {
-                    if (this.form.secret !== 'PBL2026') { showToast("Invalid Admin Key", true); return; }
-                    this.submitting = true;
-
+                    // Password Check
+                    if (this.form.secret !== 'PBL2026') { vibrateDevice([50, 50, 50]); showToast("Wrong Key", true); return; }
+                    this.haptic(); this.submitting = true;
+                    
                     let payloadDate = this.form.date;
                     if (this.form.date && this.form.status === 'DONE') {
                         const d = new Date(this.form.date);
                         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
                         payloadDate = `${d.getDate()}/${monthNames[d.getMonth()]}/${d.getFullYear()}`;
                     }
-
+                    
                     const payload = {
                         action: 'handleVacuum', type: type === 'delete' ? 'delete' : 'save',
-                        assetId: this.form.assetId, os: this.form.os, status: this.form.status,
-                        date: payloadDate, secret: this.form.secret
+                        systemName: this.form.systemName, realAssetId: this.form.assetId,
+                        os: this.form.os, status: this.form.status, date: payloadDate, secret: this.form.secret
                     };
-
                     try {
                         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                         const result = await res.json();
                         if (result.status === 'success') {
-                            this.showModal = false;
-                            showToast(type === 'delete' ? "Record Deleted" : "Record Saved");
+                            vibrateDevice([100, 50, 100]); this.showModal = false; showToast(type === 'delete' ? "Deleted" : "Saved");
                             await this.fetchData(true); 
-
-                            if (this.pendingCount === 0 && this.pcs.length > 0 && type === 'save') {
-                                setTimeout(() => { this.showReportModal = true; }, 500);
-                            }
+                            // Agar sab complete ho gaya to celebration modal dikhana
+                            if (this.pendingCount === 0 && this.pcs.length > 0 && type === 'save') { setTimeout(() => { this.showReportModal = true; }, 500); }
                         } else { showToast(result.message, true); }
                     } catch (e) { showToast("Network Error", true); } 
                     finally { this.submitting = false; }
                 },
 
+                // Filter aur Search Logic
                 get filteredList() {
                     let result = this.pcs;
                     if (this.filterStatus === 'DONE') result = result.filter(p => p.status === 'DONE');
                     else if (this.filterStatus === 'PENDING') result = result.filter(p => p.status !== 'DONE');
-                    if (this.search) result = result.filter(p => p.id.toLowerCase().includes(this.search.toLowerCase()));
+                    if (this.search) {
+                        const s = this.search.toLowerCase();
+                        result = result.filter(p => (p.systemName && p.systemName.toLowerCase().includes(s)) || (p.assetId && p.assetId.toLowerCase().includes(s)));
+                    }
                     return result;
                 },
-                
                 get doneCount() { return this.pcs.filter(p => p.status === 'DONE').length; },
                 get pendingCount() { return this.pcs.filter(p => p.status !== 'DONE').length; },
                 get percentage() { if(this.pcs.length === 0) return 0; return Math.round((this.doneCount / this.pcs.length) * 100); }
