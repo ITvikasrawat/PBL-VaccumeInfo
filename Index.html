@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PBL VacuumOps | Pop-out Edition</title>
+    <title>PBL VacuumOps | Fixed Header</title>
+    
+    <!-- ✅ Favicon -->
     <link rel="icon" type="image/png" href="pbl-logo.png">
     
     <!-- Dependencies -->
@@ -18,179 +20,237 @@
             theme: {
                 extend: {
                     colors: {
-                        // 🌹 THEME: Rose Red
+                        // 🌹 THEME: Rose Red (Professional Red)
                         brand_primary: '#e11d48', // Rose-600
                         brand_dark: '#be123c',    // Rose-700
                         brand_light: '#fff1f2',   // Rose-50
                         dark_bg: '#0f172a'
                     },
                     fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-                    animation: { 'slide-up': 'slideUp 0.3s ease-out forwards' },
-                    keyframes: { slideUp: { 'from': { opacity: 0, transform: 'translateY(10px)' }, 'to': { opacity: 1, transform: 'translateY(0)' } } }
+                    animation: {
+                        'slide-up': 'slideUp 0.3s ease-out forwards',
+                        'fade-in': 'fadeIn 0.2s ease-out forwards',
+                    },
+                    keyframes: {
+                        slideUp: {
+                            'from': { opacity: 0, transform: 'translateY(10px)' },
+                            'to': { opacity: 1, transform: 'translateY(0)' }
+                        },
+                        fadeIn: {
+                            'from': { opacity: 0, transform: 'scale(0.95)' },
+                            'to': { opacity: 1, transform: 'scale(1)' }
+                        }
+                    }
                 }
             }
         }
     </script>
+
     <style>
         [x-cloak] { display: none !important; }
         body { background-color: #fff1f2; -webkit-tap-highlight-color: transparent; }
         
-        .glass-card { background: white; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.1); }
-        .dark .glass-card { background: #1e293b; border-color: #334155; }
-        
-        /* 🔥 Gradient */
+        /* 🔥 Gradient Background */
         .bg-gradient-brand { background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); }
+
+        /* Glass Card Style */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px -5px rgba(225, 29, 72, 0.2);
+            transition: transform 0.2s;
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.5);
+        }
+        .glass-card:active { transform: scale(0.98); }
+
+        /* Input Fields */
+        .input-box {
+            width: 100%; padding: 14px; background: #fff1f2; border: 2px solid transparent;
+            border-radius: 14px; font-size: 0.9rem; color: #be123c; outline: none; transition: 0.2s; font-weight: 700;
+        }
+        .dark .input-box { background: #0f172a; color: white; }
+        .input-box:focus { background: white; border-color: #e11d48; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.15); }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 
-<body class="text-slate-800 transition-colors duration-300 min-h-screen pb-32 font-sans bg-brand_bg dark:bg-dark_bg dark:text-slate-200" x-data="vacuumTracker()">
+<body class="text-slate-800 transition-colors duration-300 min-h-screen pb-32 font-sans bg-brand_light dark:bg-dark_bg dark:text-slate-200" x-data="vacuumTracker()">
 
-    <!-- HEADER SECTION -->
-    <header class="relative pt-6 pb-20 px-5 rounded-b-[2.5rem] shadow-lg bg-gradient-brand z-30 overflow-hidden">
+    <!-- 
+      HEADER SECTION (FIXED SPACING)
+      - `pt-14`: Top Padding badha di hai taaki status bar se text na takraye.
+      - `pb-28`: Bottom Padding taaki neeche wala card overlap kare.
+    -->
+    <header class="relative pt-14 pb-28 px-5 overflow-hidden rounded-b-[3rem] shadow-xl bg-gradient-brand z-30 transition-all duration-300"
+            :class="showSearchInput ? 'pb-32' : 'pb-28'">
         
-        <!-- Decor -->
-        <div class="absolute top-[-20px] left-[-20px] w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        <!-- Background Decoration -->
+        <div class="absolute top-[-20px] left-[-20px] w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
         <div class="absolute bottom-[-10px] right-[-10px] w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
 
         <div class="relative z-10">
-            <!-- Top Nav -->
-            <div class="flex justify-between items-center mb-6">
+            <!-- Top Row: Logo + Icons -->
+            <div class="flex justify-between items-center">
+                <!-- Left: Logo & Name -->
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center shadow-inner border border-white/20">
+                    <div class="w-11 h-11 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner border border-white/20">
                         <img src="pbl-logo.png" alt="Logo" class="w-6 h-6 object-contain">
                     </div>
                     <div>
-                        <h1 class="text-xl font-black text-white leading-none">VacuumOps</h1>
-                        <span class="text-[10px] text-white/90 font-bold uppercase tracking-wider flex items-center gap-1">
+                        <h1 class="text-2xl font-black text-white leading-none tracking-tight">VacuumOps</h1>
+                        <span class="text-[10px] text-white/90 font-bold uppercase tracking-wider flex items-center gap-1 mt-0.5">
                             <i class="fa-solid fa-user-shield"></i> Ashok Singh
                         </span>
                     </div>
                 </div>
-                <button @click="toggleTheme()" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white border border-white/10 active:scale-95">
-                    <i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
-                </button>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-white/60 text-sm"></i>
-                <input type="text" x-model="search" placeholder="Search System Name or Asset ID..." 
-                       class="w-full pl-10 pr-4 py-3 bg-white/15 backdrop-blur-md border border-white/10 rounded-xl text-xs font-bold text-white placeholder-white/50 focus:outline-none focus:bg-white/20 transition">
-            </div>
-        </div>
-    </header>
-
-    <!-- MAIN CONTENT -->
-    <main class="px-4 -mt-10 relative z-40 max-w-lg mx-auto space-y-5">
-
-        <!-- 
-           🚀 UPDATED DASHBOARD STRIP 
-           - Thicker (py-4)
-           - Pop-out Center Circle
-           - Next Cycle Info Added
-        -->
-        <div class="glass-card relative px-4 py-4 rounded-3xl flex items-center justify-between shadow-xl mt-4 overflow-visible">
-            
-            <!-- Left: Cycle Info (Stacked) -->
-            <div class="flex flex-col gap-1">
-                <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-                    <i class="fa-solid fa-calendar-check text-[10px]"></i>
-                    <p class="text-[9px] font-bold uppercase tracking-wide">Current</p>
-                </div>
-                <p class="text-sm font-black text-brand_primary leading-none" x-text="currentCycleName">JAN 26</p>
                 
-                <!-- Next Cycle Added -->
-                <div class="flex items-center gap-1 mt-1 text-[9px] font-bold text-slate-400 bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded-full w-fit">
-                    <span>Next:</span>
-                    <span class="text-slate-600 dark:text-slate-300" x-text="nextCycleName">MAY 26</span>
+                <!-- Right: Search Icon + Theme -->
+                <div class="flex gap-3">
+                    <!-- Search Toggle Button -->
+                    <button @click="showSearchInput = !showSearchInput" 
+                            class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/10 active:scale-95 transition"
+                            :class="showSearchInput ? 'bg-white/30' : ''">
+                        <i class="fa-solid" :class="showSearchInput ? 'fa-xmark' : 'fa-magnifying-glass'"></i>
+                    </button>
+
+                    <!-- Theme Toggle -->
+                    <button @click="toggleTheme()" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/10 active:scale-95 transition">
+                        <i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
+                    </button>
                 </div>
             </div>
 
             <!-- 
-               Center: POP-OUT PROGRESS CIRCLE 
-               - Absolute Positioning to break border
-               - White Background & Shadow
+               SEARCH INPUT (Conditional Show)
+               - Ye sirf tab dikhega jab search icon dabaya jayega.
+               - `mt-5`: Title se thoda door rakha hai.
             -->
-            <div class="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-white dark:bg-[#1e293b] rounded-full p-1.5 shadow-[0_8px_30px_rgba(225,29,72,0.25)] flex items-center justify-center z-50">
+            <div x-show="showSearchInput" x-collapse x-cloak class="mt-5 animate-fade-in">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
+                    <input type="text" x-model="search" placeholder="Search Asset ID..." 
+                           class="w-full pl-11 pr-4 py-3.5 bg-white/20 text-white placeholder-white/70 border border-white/30 rounded-2xl outline-none font-bold text-sm backdrop-blur-md shadow-inner">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 
+      MAIN CONTENT 
+      - `-mt-16`: Card ko header ke upar overlap karane ke liye.
+    -->
+    <main class="px-4 -mt-16 relative z-40 max-w-lg mx-auto space-y-5">
+
+        <!-- 
+           DASHBOARD STRIP (Bada & Pop-out) 
+           - Red & White Theme
+        -->
+        <div class="glass-card relative px-5 py-6 rounded-[2.5rem] flex items-center justify-between shadow-2xl overflow-visible">
+            
+            <!-- Left: Current & Next Cycle -->
+            <div class="flex flex-col gap-1.5">
+                <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                    <i class="fa-solid fa-calendar-days text-sm text-brand_primary"></i>
+                    <p class="text-[10px] font-black uppercase tracking-widest">Current</p>
+                </div>
+                <p class="text-xl font-black text-brand_primary leading-none" x-text="currentCycleName">JAN 2026</p>
+                
+                <!-- Next Badge -->
+                <div class="flex items-center gap-1.5 mt-1 bg-rose-50 dark:bg-white/10 px-3 py-1 rounded-full w-fit border border-rose-100 dark:border-white/5">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase">Next:</span>
+                    <span class="text-[10px] font-bold text-slate-700 dark:text-white" x-text="nextCycleName">MAY 2026</span>
+                </div>
+            </div>
+
+            <!-- 
+               Center: POP-OUT CIRCLE
+               - Border se bahar nikalne ke liye `absolute` aur `-top` use kiya.
+            -->
+            <div class="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-white dark:bg-[#1e293b] rounded-full p-2 shadow-[0_10px_40px_rgba(225,29,72,0.3)] flex items-center justify-center z-50 border-4 border-rose-50 dark:border-slate-700">
                 <div class="relative w-full h-full">
                     <svg class="w-full h-full transform -rotate-90">
-                        <circle cx="50%" cy="50%" r="28" stroke="#ffe4e6" stroke-width="5" fill="transparent" />
-                        <circle cx="50%" cy="50%" r="28" stroke="#e11d48" stroke-width="5" fill="transparent" 
-                                :stroke-dasharray="175" :stroke-dashoffset="175 - (175 * percentage) / 100" stroke-linecap="round"/>
+                        <circle cx="50%" cy="50%" r="32" stroke="#ffe4e6" stroke-width="6" fill="transparent" />
+                        <circle cx="50%" cy="50%" r="32" stroke="#e11d48" stroke-width="6" fill="transparent" 
+                                :stroke-dasharray="200" :stroke-dashoffset="200 - (200 * percentage) / 100" stroke-linecap="round"/>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center leading-none">
-                        <span class="text-sm font-black text-brand_primary" x-text="percentage + '%'">0%</span>
+                        <span class="text-xl font-black text-brand_primary" x-text="percentage + '%'">0%</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Right: Filter Toggles -->
-            <div class="flex gap-1.5">
-                <!-- Done -->
+            <!-- Right: Filter Buttons -->
+            <div class="flex gap-2">
+                <!-- Done (Green) -->
                 <button @click="toggleFilter('DONE')" 
-                        class="flex flex-col items-center justify-center w-12 h-11 rounded-xl transition-all"
-                        :class="filterStatus === 'DONE' ? 'bg-emerald-500 text-white shadow-md shadow-emerald-200' : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'">
-                    <i class="fa-solid fa-check text-xs mb-0.5"></i>
-                    <span class="text-[10px] font-bold" x-text="doneCount">0</span>
+                        class="flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all shadow-md active:scale-95"
+                        :class="filterStatus === 'DONE' ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'">
+                    <i class="fa-solid fa-check text-sm mb-0.5"></i>
+                    <span class="text-xs font-black" x-text="doneCount">0</span>
                 </button>
                 
-                <!-- Pending -->
+                <!-- Pending (Red) -->
                 <button @click="toggleFilter('PENDING')" 
-                        class="flex flex-col items-center justify-center w-12 h-11 rounded-xl transition-all"
-                        :class="filterStatus === 'PENDING' ? 'bg-brand_primary text-white shadow-md shadow-rose-200' : 'text-brand_primary bg-rose-50 hover:bg-rose-100'">
-                    <i class="fa-regular fa-clock text-xs mb-0.5"></i>
-                    <span class="text-[10px] font-bold" x-text="pendingCount">0</span>
+                        class="flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all shadow-md active:scale-95"
+                        :class="filterStatus === 'PENDING' ? 'bg-brand_primary text-white shadow-rose-200' : 'bg-rose-50 text-brand_primary hover:bg-rose-100'">
+                    <i class="fa-regular fa-clock text-sm mb-0.5"></i>
+                    <span class="text-xs font-black" x-text="pendingCount">0</span>
                 </button>
             </div>
         </div>
 
-        <!-- LOADING -->
+        <!-- LOADING SPINNER -->
         <div x-show="loading" class="py-8 text-center">
-            <div class="w-8 h-8 border-4 border-rose-200 border-t-brand_primary rounded-full animate-spin mx-auto mb-2"></div>
-            <p class="text-[10px] font-bold text-rose-400 uppercase tracking-widest animate-pulse">Syncing Database...</p>
+            <div class="w-10 h-10 border-4 border-rose-200 border-t-brand_primary rounded-full animate-spin mx-auto mb-2"></div>
+            <p class="text-[10px] font-bold text-brand_primary uppercase tracking-widest animate-pulse">Syncing Database...</p>
         </div>
 
         <!-- ASSET LIST -->
-        <div class="space-y-2 pb-24 pt-2">
+        <div class="space-y-3 pb-28 pt-4">
             <template x-for="(pc, index) in filteredList" :key="pc.systemName + index">
-                <div class="glass-card p-3 rounded-2xl relative overflow-hidden group animate-slide-up flex items-center justify-between shadow-sm active:scale-[0.99] transition-transform"
+                <div class="glass-card p-4 rounded-[1.2rem] relative overflow-hidden group animate-slide-up flex items-center justify-between shadow-sm active:scale-[0.99] transition-transform"
                      :style="`animation-delay: ${index * 30}ms`"
-                     :class="pc.status === 'DONE' ? 'border-l-4 border-l-emerald-500' : 'border-l-4 border-l-brand_primary'"
+                     :class="pc.status === 'DONE' ? 'border-l-[5px] border-l-emerald-500' : 'border-l-[5px] border-l-brand_primary'"
                      @click="openModal('edit', pc)">
                     
-                    <div class="flex items-center gap-3 w-full overflow-hidden">
+                    <div class="flex items-center gap-4 w-full overflow-hidden">
                         <!-- Icon -->
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
-                             :class="pc.status === 'DONE' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-brand_primary'">
-                            <i class="fa-solid" :class="pc.status === 'DONE' ? 'fa-check' : 'fa-clock'"></i>
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-sm transition-colors shrink-0"
+                             :class="pc.status === 'DONE' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-brand_primary'">
+                            <i class="fa-solid" :class="pc.status === 'DONE' ? 'fa-check' : 'fa-hourglass-half'"></i>
                         </div>
 
                         <div class="min-w-0 flex-1">
                             <!-- System Name -->
-                            <h3 class="font-extrabold text-sm text-slate-800 dark:text-white truncate" x-text="pc.systemName"></h3>
+                            <h3 class="font-extrabold text-base text-slate-800 dark:text-white truncate" x-text="pc.systemName"></h3>
                             
-                            <!-- Metadata Row (ID + OS) -->
-                            <div class="flex flex-wrap items-center gap-2 mt-0.5">
-                                <span class="text-[9px] font-mono font-bold text-slate-500 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded truncate max-w-[120px]" 
+                            <!-- Asset ID & OS -->
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-600 truncate" 
                                       x-text="pc.assetId ? pc.assetId : 'No ID'"></span>
-                                <span class="text-[8px] font-bold text-slate-400 uppercase flex items-center gap-1">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase flex items-center gap-1">
                                     <i :class="getOsIcon(pc.os)"></i> <span x-text="pc.os"></span>
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Status Label -->
+                    <!-- Right Side -->
                     <div class="text-right shrink-0 pl-2">
                         <template x-if="pc.status === 'DONE'">
                             <div class="flex flex-col items-end">
-                                <span class="text-[8px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">CLEAN</span>
-                                <p class="text-[8px] font-bold text-slate-400 mt-0.5" x-text="formatDateDisplay(pc.date)"></p>
+                                <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">CLEAN</span>
+                                <p class="text-[9px] font-bold text-slate-400 mt-0.5" x-text="formatDateDisplay(pc.date)"></p>
                             </div>
                         </template>
                         <template x-if="pc.status !== 'DONE'">
-                            <i class="fa-solid fa-chevron-right text-rose-300 text-xs"></i>
+                            <i class="fa-solid fa-chevron-right text-rose-300 text-sm"></i>
                         </template>
                     </div>
                 </div>
@@ -198,69 +258,77 @@
 
             <!-- Empty State -->
             <div x-show="filteredList.length === 0 && !loading" class="text-center py-10 opacity-50">
-                <i class="fa-solid fa-filter-circle-xmark text-3xl text-rose-300 mb-2"></i>
-                <p class="text-xs font-bold text-rose-400">No assets found</p>
+                <i class="fa-solid fa-filter-circle-xmark text-4xl text-slate-300 mb-2"></i>
+                <p class="text-xs font-bold text-slate-400">No assets found</p>
                 <button @click="filterStatus = 'ALL'; search = ''" x-show="filterStatus !== 'ALL' || search" class="mt-3 text-[10px] font-bold text-white bg-brand_primary px-3 py-1.5 rounded-full">Clear Filters</button>
             </div>
         </div>
     </main>
 
     <!-- FAB -->
-    <button @click="openModal('add')" class="fixed bottom-20 right-5 w-12 h-12 bg-gradient-to-br from-brand_primary to-brand_dark rounded-full text-white shadow-xl shadow-brand_primary/40 flex items-center justify-center active:scale-90 transition-transform z-40">
-        <i class="fa-solid fa-plus text-lg"></i>
+    <button @click="openModal('add')" class="fixed bottom-24 right-5 w-14 h-14 bg-gradient-to-br from-brand_primary to-brand_dark rounded-full text-white shadow-xl shadow-brand_primary/40 flex items-center justify-center active:scale-90 transition-transform z-40">
+        <i class="fa-solid fa-plus text-xl"></i>
     </button>
 
     <!-- FOOTER -->
-    <footer class="fixed bottom-0 left-0 w-full bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-lg border-t border-rose-100 dark:border-white/5 px-5 py-3 z-50 flex justify-between items-center">
+    <footer class="fixed bottom-0 left-0 w-full bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-lg border-t border-rose-100 dark:border-white/5 px-5 py-4 z-50 flex justify-between items-center">
         <div>
-            <p class="text-[8px] font-bold text-rose-300 uppercase tracking-widest">Operator</p>
-            <p class="text-xs font-black text-slate-800 dark:text-white">Ashok Singh <span class="text-[8px] bg-rose-100 text-brand_primary px-1 rounded ml-1">IT</span></p>
+            <p class="text-[9px] font-bold text-brand_primary uppercase tracking-widest">Operator</p>
+            <p class="text-xs font-black text-slate-800 dark:text-white">Ashok Singh <span class="text-[9px] bg-rose-100 text-brand_primary px-1.5 py-0.5 rounded ml-1">IT</span></p>
         </div>
         <div class="flex gap-2">
-            <button @click="fetchData(true)" class="w-9 h-9 rounded-lg bg-rose-50 dark:bg-white/10 flex items-center justify-center text-rose-400 dark:text-slate-300 active:scale-95 transition">
+            <button @click="fetchData(true)" class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-white/10 flex items-center justify-center text-brand_primary dark:text-slate-300 active:scale-95 transition">
                 <i class="fa-solid fa-rotate" :class="{'fa-spin': isSyncing}"></i>
             </button>
-            <button @click="openConfirmModal()" class="px-4 h-9 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-[10px] flex items-center gap-2 shadow-lg active:scale-95 transition" :disabled="emailSending">
+            <button @click="openConfirmModal()" class="px-4 h-10 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-[10px] flex items-center gap-2 shadow-lg active:scale-95 transition" :disabled="emailSending">
                 <i class="fa-solid fa-file-export"></i> Report
             </button>
         </div>
     </footer>
 
-    <!-- MODAL: ADD/EDIT -->
-    <div x-show="showModal" x-cloak class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4">
-        <div class="bg-white dark:bg-[#1e293b] w-full max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6 shadow-2xl relative" @click.away="showModal = false">
-            <div class="flex justify-between items-center mb-5">
-                <h3 class="text-xl font-black text-slate-800 dark:text-white" x-text="mode === 'add' ? 'New Entry' : 'Edit Details'"></h3>
-                <button @click="showModal = false" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    <!-- ================= MODALS ================= -->
+    
+    <!-- Edit/Add Modal -->
+    <div x-show="showModal" x-cloak 
+         class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-full"
+         x-transition:enter-end="opacity-100 translate-y-0">
+        
+        <div class="bg-white dark:bg-[#1e293b] w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-8 shadow-2xl relative" @click.away="showModal = false">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-black text-slate-800 dark:text-white" x-text="mode === 'add' ? 'Add Asset' : 'Edit Asset'"></h3>
+                <button @click="showModal = false" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 flex items-center justify-center hover:text-brand_primary transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="space-y-3">
-                <div><label class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-1 block">System Name</label><input type="text" x-model="form.systemName" class="w-full p-3 bg-rose-50 rounded-xl text-sm font-bold border-2 border-transparent focus:border-brand_primary focus:bg-white outline-none uppercase" placeholder="PBLNET001"></div>
-                <div><label class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-1 block">Asset Tag</label><input type="text" x-model="form.assetId" class="w-full p-3 bg-rose-50 rounded-xl text-sm font-mono font-bold border-2 border-transparent focus:border-brand_primary focus:bg-white outline-none" placeholder="PBL-NOD-IT-CPU-001"></div>
+
+            <div class="space-y-4">
+                <div><label class="text-[10px] font-bold text-brand_primary/70 uppercase tracking-widest mb-1.5 block">System Name</label><input type="text" x-model="form.systemName" class="input-box uppercase" placeholder="PBLNET001"></div>
+                <div><label class="text-[10px] font-bold text-brand_primary/70 uppercase tracking-widest mb-1.5 block">Asset Tag / ID</label><input type="text" x-model="form.assetId" class="input-box font-mono text-sm" placeholder="e.g. PBL-NOD-IT-CPU-001"></div>
                 <div>
-                    <label class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-1 block">OS</label>
-                    <select x-model="form.os" class="w-full p-3 bg-rose-50 rounded-xl text-sm font-bold border-2 border-transparent focus:border-brand_primary outline-none">
+                    <label class="text-[10px] font-bold text-brand_primary/70 uppercase tracking-widest mb-1.5 block">OS</label>
+                    <select x-model="form.os" class="input-box appearance-none">
                         <option value="Windows 11 Pro">Windows 11 Pro</option><option value="Windows 10">Windows 10</option><option value="Windows XP">Windows XP</option><option value="Windows Server 2019">Windows Server 2019</option><option value="OpenSuse">OpenSuse</option>
                     </select>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div><label class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-1 block">Status</label><select x-model="form.status" @change="handleStatusChange()" class="w-full p-3 bg-rose-50 rounded-xl text-sm font-bold outline-none" :class="form.status === 'DONE' ? 'text-emerald-600' : 'text-brand_primary'"><option value="PENDING">Pending</option><option value="DONE">Cleaned</option></select></div>
-                    <div><label class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-1 block">Date</label><input type="date" x-model="form.date" class="w-full p-3 bg-rose-50 rounded-xl text-sm font-bold outline-none" :disabled="form.status !== 'DONE'"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-[10px] font-bold text-brand_primary/70 uppercase tracking-widest mb-1.5 block">Status</label><select x-model="form.status" @change="handleStatusChange()" class="input-box appearance-none" :class="form.status === 'DONE' ? 'text-emerald-600 bg-emerald-50' : 'text-brand_primary bg-rose-50'"><option value="PENDING">Pending</option><option value="DONE">Cleaned</option></select></div>
+                    <div><label class="text-[10px] font-bold text-brand_primary/70 uppercase tracking-widest mb-1.5 block">Date</label><input type="date" x-model="form.date" class="input-box" :disabled="form.status !== 'DONE'"></div>
                 </div>
-                <div><label class="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-1 block">Passkey</label><input type="password" x-model="form.secret" class="w-full p-3 bg-white border-2 border-dashed border-rose-200 rounded-xl text-sm font-bold focus:border-brand_primary outline-none" placeholder="Required to Save"></div>
-                <div class="flex gap-3 pt-2">
-                    <button x-show="mode === 'edit'" @click="performAction('delete')" class="w-12 h-12 bg-rose-50 text-brand_primary rounded-xl flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
-                    <button @click="performAction('save')" class="flex-1 h-12 bg-brand_primary text-white rounded-xl font-bold text-sm shadow-lg flex items-center justify-center gap-2"><span>Save</span> <i x-show="submitting" class="fa-solid fa-circle-notch fa-spin"></i></button>
+                <div><label class="text-[10px] font-bold text-brand_primary/70 uppercase tracking-widest mb-1.5 block">Passkey</label><input type="password" x-model="form.secret" class="input-box border-dashed" placeholder="Required to Save"></div>
+                <div class="flex gap-3 pt-4 mt-2">
+                    <button x-show="mode === 'edit'" @click="performAction('delete')" class="w-14 h-14 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
+                    <button @click="performAction('save')" class="flex-1 h-14 bg-brand_primary text-white rounded-xl font-bold text-sm shadow-xl flex items-center justify-center gap-2"><span>Save</span> <i x-show="submitting" class="fa-solid fa-circle-notch fa-spin"></i></button>
                 </div>
             </div>
         </div>
     </div>
-
+    
     <!-- Confirm Modal -->
     <div x-show="showConfirmModal" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center bg-black/70 backdrop-blur-md p-6">
         <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl">
-            <h3 class="text-lg font-black text-slate-800">Send Report?</h3>
-            <p class="text-xs text-slate-500 mb-4">Email status to IT Head.</p>
-            <div class="flex gap-2"><button @click="showConfirmModal = false" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs">Cancel</button><button @click="sendEmailReport(); showConfirmModal = false" class="flex-1 py-3 bg-brand_primary text-white rounded-xl font-bold text-xs shadow-lg">Confirm</button></div>
+            <h3 class="text-xl font-black text-slate-800 dark:text-white mb-2">Send Report?</h3>
+            <p class="text-xs text-slate-500 mb-6">Send status summary to IT Head.</p>
+            <div class="flex gap-3"><button @click="showConfirmModal = false" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs">Cancel</button><button @click="sendEmailReport(); showConfirmModal = false" class="flex-1 py-3 bg-brand_primary text-white rounded-xl font-bold text-xs shadow-lg">Confirm</button></div>
         </div>
     </div>
 
@@ -268,27 +336,27 @@
     <div x-show="showReportModal" x-cloak class="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center shadow-2xl relative overflow-hidden">
             <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl animate-bounce">🎉</div>
-            <h3 class="text-xl font-black text-slate-800">Complete!</h3>
+            <h3 class="text-2xl font-black text-slate-800 dark:text-white">Complete!</h3>
             <p class="text-xs text-slate-500 mb-6">Cycle <span x-text="currentCycleName" class="font-bold text-brand_primary"></span> finished.</p>
-            <button @click="sendEmailReport()" class="w-full py-3 bg-brand_primary text-white rounded-xl font-bold text-xs shadow-lg">Send Closure Report</button>
+            <button @click="sendEmailReport()" class="w-full py-4 bg-brand_primary text-white rounded-xl font-bold text-xs shadow-lg">Send Closure Report</button>
             <button @click="showReportModal = false" class="mt-4 text-xs font-bold text-slate-400">Close</button>
         </div>
     </div>
 
     <!-- TOAST -->
     <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-3 z-[120] transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-10">
-        <i class="fa-solid fa-check-circle text-rose-400"></i>
+        <i class="fa-solid fa-check-circle text-brand_primary"></i>
         <span id="toast-msg" class="text-xs font-bold">Action Done</span>
     </div>
 
     <!-- LOGIC -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx4DM9p35wv3S0Mip26IGmr7jJHwC9sUTxj9oeymjx-hXjHNCZwbYlis5dmoCcUiiUV7A/exec";  
+        const API_URL = "https://script.google.com/macros/s/AKfycbzcC-725iqJopRom9r_vGd5bZ2WKxTS0ZKDTWkflUZXluqzPWSkok1PPzyosA7QJ7G4Og/exec";  
 
         function showToast(msg, isError = false) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
-            toast.querySelector('i').className = isError ? 'fa-solid fa-circle-exclamation text-amber-400' : 'fa-solid fa-check-circle text-rose-400';
+            toast.querySelector('i').className = isError ? 'fa-solid fa-circle-exclamation text-amber-400' : 'fa-solid fa-check-circle text-brand_primary';
             toast.classList.remove('opacity-0', '-translate-y-10');
             setTimeout(() => toast.classList.add('opacity-0', '-translate-y-10'), 3000);
         }
@@ -299,7 +367,7 @@
 
         document.addEventListener('alpine:init', () => {
             Alpine.data('vacuumTracker', () => ({
-                pcs: [], search: '', loading: false, isSyncing: false, submitting: false, showModal: false, showReportModal: false, showConfirmModal: false, emailSending: false, isDark: false, mode: 'add', filterStatus: 'ALL',
+                pcs: [], search: '', loading: false, isSyncing: false, submitting: false, showModal: false, showReportModal: false, showConfirmModal: false, emailSending: false, isDark: false, mode: 'add', filterStatus: 'ALL', showSearchInput: false,
                 form: { systemName: '', assetId: '', os: 'Windows 11 Pro', status: 'PENDING', date: '', secret: '' },
                 currentCycleName: '', nextCycleName: '', cycleStartDate: null,
 
@@ -319,13 +387,12 @@
                     else { document.documentElement.classList.remove('dark'); localStorage.setItem('theme', 'light'); }
                 },
 
-                // ✅ Toggle Filter (Clicking same filter unchecks it)
                 toggleFilter(status) {
                     this.haptic();
                     if (this.filterStatus === status) {
-                        this.filterStatus = 'ALL';
+                        this.filterStatus = 'ALL'; 
                     } else {
-                        this.filterStatus = status;
+                        this.filterStatus = status; 
                     }
                 },
 
